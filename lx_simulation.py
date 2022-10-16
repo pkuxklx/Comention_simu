@@ -6,7 +6,6 @@ import random
 import pandas as pd
 
 from infoband.band_info import InfoCorrBand
-from simulation import gen_S
 from wlpy.covariance import Covariance
 from utils.adpt_correlation_threshold import AdptCorrThreshold
 from wlpy.gist import heatmap
