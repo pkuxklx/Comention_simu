@@ -173,5 +173,9 @@ class InfoCorrBand():
     def __is_pd(self, k) -> bool:
         return np.linalg.eigvals(self.fit_info_corr_band(k))[-1] > self.eps
     
+    def auto_fit(self):
+        k = self.k_by_cv()
+        return self.fit_info_corr_band(k), self.fit_info_cov_band(k), k
+    
     # def params_by_cv(self)
 # %%

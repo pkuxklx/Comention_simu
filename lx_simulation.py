@@ -1,37 +1,258 @@
 # %%
 import numpy as np
+from sklearn.datasets import make_sparse_spd_matrix
+from scipy import linalg as LA
+import random
+import pandas as pd
+
 from infoband.band_info import InfoCorrBand
+from simulation import gen_S
+from wlpy.covariance import Covariance
+from utils.adpt_correlation_threshold import AdptCorrThreshold
+from wlpy.gist import heatmap
+
 # %%
-rng = np.random.RandomState(100)
-N = 100
-T = 80
-S = sum( [make_sparse_spd_matrix(N, random_state = i) for i in range(5)] )
-print(S[:5, :5])
-X = rng.multivariate_normal(mean =np.zeros(N), cov = S, size = T)
+def cov2cor(S: np.ndarray):
+    D = np.diag(np.sqrt(np.diag(S)))
+    D_inv = np.linalg.inv(D)
+    return D_inv @ S @ D_inv
+
 # %%
-c = InfoCorrBand(X)
-# c.sample_cov()[:3, :3]
-# c.sample_corr()[:3, :3]
-# %%
-def gen_S(rho = 0.8,N = 500):
+# Self Covariance of AR(1) process
+def gen_S_AR1(rho = 0.8,N = 500) -> np.ndarray:
+    # generate the covariance matrix of AR(1) process
     S_block = np.zeros(shape=[N, N])
     for j in range(0, N):
         S_block = S_block + np.diag(np.ones(N-j)*(rho**j), -j) + \
         np.diag(np.ones(N-j)*(rho**j), j)
     S = S_block - np.eye(N)
     return S
+
 # %%
-L = abs(S)
+rng = np.random.RandomState(100)
+N = 100
+T = 50
+alpha = 0.95
+rho = 0.8
+# %%
+S = gen_S_AR1(N = N, rho = rho)
+# S = make_sparse_spd_matrix(N, alpha = alpha, random_state = 100)
+# print(S[:5, :5])
+X = rng.multivariate_normal(mean = np.zeros(N), cov = S, size = T)
+S[:5, :5]
+
+# %%
+c = InfoCorrBand(X)
+# c.sample_cov()[:3, :3]
+# c.sample_corr()[:3, :3]
+
+# %%
+R = cov2cor(S)
+L = abs(R)
 c.feed_info(L)
-# c.plot_k_pd()
+# print(L[:5, :5])
+
 # %%
-c.find_biggest_k_for_pd()
-# %%
+# c.find_biggest_k_for_pd()
 # c.plot_k_pd(range(N-50, N+1))
+
 # %%
-k = c.k_by_cv(verbose = False)
-k
+k = c.k_by_cv()
+print(k)
+
 # %%
 R_est = c.fit_info_corr_band(k)
 S_est = c.fit_info_cov_band(k)
+
 # %%
+def show_rs(S: np.ndarray, 
+            c: InfoCorrBand, m: Covariance, 
+            ord = 'fro'):
+    # ord: norm type
+    R = cov2cor(S)
+    print('Correlation itself', LA.norm(R, ord))
+    print('Error:')
+    print('Sample', LA.norm(c.sample_corr() - R, ord))
+    print('Linear Shrinkage', LA.norm(cov2cor(m.lw_lin_shrink()) - R, ord))
+    print('Nonlinear Shrinkage', LA.norm(cov2cor(m.nonlin_shrink()) - R, ord))
+    print()
+    print('Covariance itself', LA.norm(S, ord))
+    print('Error:')
+    print('Sample', LA.norm(c.sample_cov() - S, ord))
+    print('Linear Shrinkage', LA.norm(m.lw_lin_shrink() - S, ord))
+    print('Nonlinear Shrinkage', LA.norm(m.nonlin_shrink() - S, ord))
+    return
+# %%
+m = Covariance(X)
+
+# %%
+def gen_eta_sequence(N, eta = 0.5, draw_type = 'random', is_random = False, 
+                     rand_seed = 100, near_factor = 2) -> np.ndarray:
+    '''
+    Generate a sequence b, which is a permutation of {1, ..., N}. 
+    b satisfies the property: for any 0 < k < N+1, b[0]~b[k-1] include {1, ..., ceil(eta*k)}.  
+    
+    draw_type : {'random', 'near'}
+        Algorithms about how to draw ( {b[0], ..., b[k-1]} - {1, ..., ceil(eta*k)} ). Here '-' is a subtraction between two sets.
+    is_random : bool
+        If False, we use random_seed as random seed, for repeat running results.
+    random_seed : int
+    near_factor : float
+        Needed only when draw_type = 'near'.
+    '''
+    if is_random:
+        rng = random
+    else:
+        rng = np.random.RandomState(rand_seed)
+        
+    b = [1] # Default to keep the diagonal element in covariance estimation.
+    b_complement = [i for i in range(2, N + 1)] # b's complement set
+    
+    for k in range(2, N + 1):
+        # consider k-th element
+        th = int(np.ceil(eta * k))
+        # S^L_k include S^d_{th}
+        cnt = sum([1 if num <= th else 0 for num in b])
+        if cnt < th:
+            for next_id in range(1, th + 1):
+                if next_id not in b:
+                    b.append(next_id)
+                    b_complement.remove(next_id)
+                    break
+        else:
+            # len(b_complement) == N + 1 - k
+            if draw_type == 'random':
+                j = rng.randint(0, N - k) if N - k > 0 else 0
+            elif draw_type == 'near':
+                upper = min(int(near_factor * k), N - k)
+                j = rng.randint(0, upper) if upper > 0 else 0
+            else:
+                raise Exception('draw_type, value error')
+            next_id = b_complement[j] 
+            b.append(next_id)
+            b_complement.remove(next_id)
+    return np.array(b)
+
+# %%
+def gen_L(S, eta, verbose = False, draw_type = 'random', is_random = False, 
+          rand_seed = 100, near_factor = 2):
+    N = S.shape[0]
+    new_rowSort = np.zeros((N, N))
+    
+    R = cov2cor(S)
+    L = abs(R)
+    rowSort = InfoCorrBand(X = np.eye(N), L = L).rowSort # You can ignore the 'X = np.eye(N)' parameter. I create this temporary object solely to get 'rowSort' matrix.
+    
+    for i in range(N):
+        row = rowSort[i]
+        argst = row.argsort()
+        b = gen_eta_sequence(N, eta, draw_type, is_random, rand_seed, near_factor)
+        for j in range(N):
+            new_rowSort[i][argst[j]] = b[j]
+    
+    L_eta = 1 / new_rowSort
+    res = (L_eta, new_rowSort, rowSort)
+    return res if verbose else L_eta
+
+# %%
+L1 = gen_L(S, eta = 0.5, verbose = 0, 
+           draw_type = 'near', is_random = 0)
+c1 = InfoCorrBand(X = X, L = L1, num_cv = 20)
+k1 = c1.k_by_cv()
+print(k1)
+R_est1 = c1.fit_info_corr_band(k1)
+S_est1 = c1.fit_info_cov_band(k1)
+
+# %%
+L2 = gen_L(S, eta = 0.5, verbose = 0, 
+           draw_type = 'random', is_random = 0)
+c2 = InfoCorrBand(X = X, L = L2, num_cv = 20)
+k2 = c2.k_by_cv()
+print(k2)
+R_est2 = c2.fit_info_corr_band(k2)
+S_est2 = c2.fit_info_cov_band(k2)
+
+# %%
+show_rs(S, c, m, 'fro')
+
+# %%
+show_rs(S, c, m, 2)
+
+# %%
+show_rs(S, c, m, 1)
+
+# %%
+c.rowSort[5][:10]
+c1.rowSort[5][:20]
+c2.rowSort[5][:10]
+
+# %%
+for ord in ['fro', 2, 1]:
+    print(ord, 'cor')
+    print(LA.norm(R - R_est, ord))
+    print(LA.norm(R - R_est1, ord))
+    print(LA.norm(R - R_est2, ord))
+    print(ord, 'cov')
+    print(LA.norm(S - S_est, ord))
+    print(LA.norm(S - S_est1, ord))
+    print(LA.norm(S - S_est2, ord))
+
+# %%
+heatmap(R)
+heatmap(R_est)
+heatmap(R_est1)
+heatmap(R_est2)
+heatmap(c.sample_corr())
+
+# %%
+c.auto_fit()
+
+# %%
+is_random = False
+rng = (random if is_random else np.random.RandomState(100))
+N = 200
+T = 100
+res = []
+
+for ord in ['fro', 2, 1]:
+    for rho in [0.8, 0.9, 0.95, 0.99]:
+        for eta in [0.5, 0.8, 1]:
+            for near_factor in [0.5, 1, 2]:
+                S = gen_S_AR1(rho = rho, N = N)
+                R = cov2cor(S)
+                L = gen_L(S, eta, draw_type = 'near', 
+                        is_random = is_random)
+                X = rng.multivariate_normal(mean = np.zeros(N), cov = S, size = T)
+                m = Covariance(X)
+                c = InfoCorrBand(X, L)
+                
+                R_est, S_est = c.auto_fit()[:2]
+                S_l = m.lw_lin_shrink()
+                R_l = cov2cor(S_l)
+                S_nl = m.nonlin_shrink()
+                R_nl = cov2cor(S_nl)
+                
+                dct = {'rho': rho, 
+                    'eta': eta, 
+                    'near factor': near_factor, 
+                    'S': LA.norm(S, ord), 
+                    'Sample Cov': LA.norm(c.sample_cov() - S, ord), 
+                    'Linear Shrinkage Cov': LA.norm(S_l - S, ord), 
+                    'Nonlinear Shrinkage Cov': LA.norm(S_nl - S, ord), 
+                    'Info Band Cov': LA.norm(S_est - S, ord), 
+                    'R': LA.norm(R, ord), 
+                    'Sample Cor': LA.norm(c.sample_corr() - R, ord), 
+                    'Linear Shrinkage Cor': LA.norm(R_l - R, ord), 
+                    'Nonlinear Shrinkage Cor': LA.norm(R_nl - R, ord), 
+                    'Info Band Cor': LA.norm(R_est - R, ord)}
+                res += [dct]
+# %%
+df = pd.DataFrame(res)
+df
+# %%
+df.to_csv('result_full.csv')
+df.to_csv('result.csv', float_format = '%.2f') 
+# %%
+
+# %%
+df = pd.read_csv('result.csv')

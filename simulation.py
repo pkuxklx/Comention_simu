@@ -127,8 +127,7 @@ heatmap(m.sample_cov())
 heatmap(m.lw_lin_shrink())
 heatmap(m.nonlin_shrink())
 # %%
-[estimate(G, generate_sample(S)) for i in range(100)]
-
+# [estimate(G, generate_sample(S)) for i in range(100)]
 
 # %%
 S1 = m.fit_adaptive_corr_threshold(params = [2,0])
@@ -169,4 +168,6 @@ pd.set_option("precision", 2)
 df = df.set_index(['rho', 'scale'])
 with open('rslt.json', 'w') as f:
     f.write(df.to_latex())
+# %%
+df
 # %%
