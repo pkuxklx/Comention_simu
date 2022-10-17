@@ -230,26 +230,26 @@ for ord in ['fro', 2, 1]:
                 S_nl = m.nonlin_shrink()
                 R_nl = cov2cor(S_nl)
                 
-                dct_cov = {'group': 'cov', 
+                dct_cov = {'group': 'S', 
                     'norm type': ord, 
                     'rho': rho, 
                     'eta': eta, 
                     'near factor': near_factor, 
-                    'S': LA.norm(S, ord), 
-                    'Sample Cov': LA.norm(c.sample_cov() - S, ord), 
-                    'Linear Shrinkage Cov': LA.norm(S_l - S, ord), 
-                    'Nonlinear Shrinkage Cov': LA.norm(S_nl - S, ord), 
-                    'Info Band Cov': LA.norm(S_est - S, ord)}
-                dct_cor = {'group': 'cor', 
+                    'S or R': LA.norm(S, ord), 
+                    'Sample': LA.norm(c.sample_cov() - S, ord), 
+                    'Linear Shrinkage': LA.norm(S_l - S, ord), 
+                    'Nonlinear Shrinkage': LA.norm(S_nl - S, ord), 
+                    'Info Band': LA.norm(S_est - S, ord)}
+                dct_cor = {'group': 'R', 
                     'norm type': ord, 
                     'rho': rho, 
                     'eta': eta, 
                     'near factor': near_factor, 
-                    'R': LA.norm(R, ord), 
-                    'Sample Cor': LA.norm(c.sample_corr() - R, ord), 
-                    'Linear Shrinkage Cor': LA.norm(R_l - R, ord), 
-                    'Nonlinear Shrinkage Cor': LA.norm(R_nl - R, ord), 
-                    'Info Band Cor': LA.norm(R_est - R, ord)}
+                    'S or R': LA.norm(R, ord), 
+                    'Sample': LA.norm(c.sample_corr() - R, ord), 
+                    'Linear Shrinkage': LA.norm(R_l - R, ord), 
+                    'Nonlinear Shrinkage': LA.norm(R_nl - R, ord), 
+                    'Info Band': LA.norm(R_est - R, ord)}
                 res += [dct_cov, dct_cor]
 # %%
 df = pd.DataFrame(res)
@@ -258,6 +258,6 @@ df
 df.to_csv('result_full.csv')
 df.to_csv('result.csv', float_format = '%.2f') 
 # %%
-
+  
 # %%
 # %%
