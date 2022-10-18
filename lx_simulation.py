@@ -4,17 +4,18 @@ from sklearn.datasets import make_sparse_spd_matrix
 from scipy import linalg as LA
 import random
 import pandas as pd
+import time
 
 from infoband.band_info import InfoCorrBand
 from wlpy.covariance import Covariance
 from utils.adpt_correlation_threshold import AdptCorrThreshold
 from wlpy.gist import heatmap
 # %%
+# Covariance to Correlation
 def cov2cor(S: np.ndarray):
     D = np.diag(np.sqrt(np.diag(S)))
     D_inv = np.linalg.inv(D)
     return D_inv @ S @ D_inv
-
 # %%
 # Self Covariance of AR(1) process
 def gen_S_AR1(rho = 0.8,N = 500) -> np.ndarray:
@@ -25,7 +26,6 @@ def gen_S_AR1(rho = 0.8,N = 500) -> np.ndarray:
         np.diag(np.ones(N-j)*(rho**j), j)
     S = S_block - np.eye(N)
     return S
-
 # %%
 rng = np.random.RandomState(100)
 N = 100
@@ -33,35 +33,25 @@ T = 50
 alpha = 0.95
 rho = 0.8
 # %%
-S = gen_S_AR1(N = N, rho = rho)
-# S = make_sparse_spd_matrix(N, alpha = alpha, random_state = 100)
-# print(S[:5, :5])
+S = gen_S_AR1(N = N, rho = rho) # structured
+# S = make_sparse_spd_matrix(N, alpha = alpha, random_state = 100) # unstructured
+# S[:5, :5]
 X = rng.multivariate_normal(mean = np.zeros(N), cov = S, size = T)
-S[:5, :5]
-
 # %%
 c = InfoCorrBand(X)
-# c.sample_cov()[:3, :3]
-# c.sample_corr()[:3, :3]
-
-# %%
 R = cov2cor(S)
 L = abs(R)
 c.feed_info(L)
-# print(L[:5, :5])
-
 # %%
-# c.find_biggest_k_for_pd()
-# c.plot_k_pd(range(N-50, N+1))
-
+# c.find_biggest_k_for_pd() # I delete this method
+c.plot_k_pd(range(N - 50, N + 1))
 # %%
 k = c.k_by_cv()
 print(k)
-
-# %%
 R_est = c.fit_info_corr_band(k)
 S_est = c.fit_info_cov_band(k)
-
+# %%
+m = Covariance(X)
 # %%
 def show_rs(S: np.ndarray, 
             c: InfoCorrBand, m: Covariance, 
@@ -81,12 +71,9 @@ def show_rs(S: np.ndarray,
     print('Nonlinear Shrinkage', LA.norm(m.nonlin_shrink() - S, ord))
     return
 # %%
-m = Covariance(X)
-
-# %%
 def gen_eta_sequence(N, eta = 0.5, draw_type = 'random', is_random = False, 
                      rand_seed = 100, near_factor = 2) -> np.ndarray:
-    '''
+    """
     Generate a sequence b, which is a permutation of {1, ..., N}. 
     b satisfies the property: for any 0 < k < N+1, b[0]~b[k-1] include {1, ..., ceil(eta*k)}.  
     
@@ -97,7 +84,7 @@ def gen_eta_sequence(N, eta = 0.5, draw_type = 'random', is_random = False,
     random_seed : int
     near_factor : float
         Needed only when draw_type = 'near'.
-    '''
+    """
     if is_random:
         rng = random
     else:
@@ -208,28 +195,43 @@ c.auto_fit()
 # %%
 is_random = False
 rng = (random if is_random else np.random.RandomState(100))
-N = 200
-T = 100
+N = 500
+T = 200
 res = []
-
-for ord in ['fro', 2, 1]:
-    for rho in [0.8, 0.9, 0.95, 0.99]:
-        for eta in [0.5, 0.8, 1]:
-            for near_factor in [0.5, 1, 2]:
-                S = gen_S_AR1(rho = rho, N = N)
-                R = cov2cor(S)
-                L = gen_L(S, eta, draw_type = 'near', 
-                        is_random = is_random)
-                X = rng.multivariate_normal(mean = np.zeros(N), cov = S, size = T)
-                m = Covariance(X)
-                c = InfoCorrBand(X, L)
-                
-                R_est, S_est = c.auto_fit()[:2]
-                S_l = m.lw_lin_shrink()
-                R_l = cov2cor(S_l)
-                S_nl = m.nonlin_shrink()
-                R_nl = cov2cor(S_nl)
-                
+rho_range = [0.8, 0.9, 0.95, 0.99]
+eta_range = [0.5, 0.8, 1]
+ord_range = ['fro', 2]
+near_factor_range = [0.5, 2]
+# %%
+''' 
+rho_range = [0.95]
+eta_range = [1]
+'''
+# %%
+for rho in rho_range:
+    S = gen_S_AR1(rho = rho, N = N)
+    R = cov2cor(S)
+    X = rng.multivariate_normal(mean = np.zeros(N), cov = S, size = T)
+    
+    m = Covariance(X)
+    S_l = m.lw_lin_shrink()
+    R_l = cov2cor(S_l)
+    S_nl = m.nonlin_shrink()
+    R_nl = cov2cor(S_nl)
+     
+    for eta in eta_range:
+        for near_factor in near_factor_range:
+            L = gen_L(S, eta, 
+                draw_type = 'near', 
+                is_random = is_random, 
+                near_factor = near_factor)   
+             
+            c = InfoCorrBand(X, L)
+            R_est, S_est = c.auto_fit()[:2]
+            
+            for ord in ord_range:   
+                print(rho, eta, near_factor, ord, end = ' ')
+                t1 = time.time()
                 dct_cov = {'group': 'S', 
                     'norm type': ord, 
                     'rho': rho, 
@@ -250,14 +252,18 @@ for ord in ['fro', 2, 1]:
                     'Linear Shrinkage': LA.norm(R_l - R, ord), 
                     'Nonlinear Shrinkage': LA.norm(R_nl - R, ord), 
                     'Info Band': LA.norm(R_est - R, ord)}
+                t2 = time.time()
+                print(t2 - t1)
                 res += [dct_cov, dct_cor]
 # %%
 df = pd.DataFrame(res)
 df
 # %%
-df.to_csv('result_full.csv')
-df.to_csv('result.csv', float_format = '%.2f') 
+path = 'resultData/'
+file_name = 'result_' + str(N) + '-' + str(T) + '.csv'
+df.to_csv(path + file_name)
+# df.to_csv(path + file_name, float_format = '%.5f') 
 # %%
-  
 # %%
+
 # %%

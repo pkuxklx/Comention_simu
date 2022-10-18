@@ -86,6 +86,7 @@ class InfoCorrBand():
     def sample_corr(self):
         return np.corrcoef(self.X, rowvar = False)
     
+    """
     def find_biggest_k_for_pd(self):
         '''
         When k=N, the estimator reduces to the sample covariance, not P.D.
@@ -104,6 +105,7 @@ class InfoCorrBand():
             else:
                 right = mid - 1
         return mid
+    """
     
     def k_by_cv(self, cv_option = 'pd', verbose = False):
         '''
@@ -166,7 +168,7 @@ class InfoCorrBand():
         plt.plot(k_range, vals)
         plt.xlabel('parameter k')
         plt.ylabel('smallest eigenvalue of correlation estimator')
-        plt.savefig('../figs/plot_k_pd.jpg')
+        # plt.savefig('../figs/plot_k_pd.jpg')
         plt.show()
         return
     

@@ -10,7 +10,8 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "justMyCode": true
+            "justMyCode": true, 
+            "python": "D:\\anaconda3\\envs\\simu\\python.exe"
         }
     ]
 }
