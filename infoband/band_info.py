@@ -124,7 +124,8 @@ class InfoCorrBand():
             if verbose:
                 print(score)
             return score.argmin() + 1
-        raise Exception("Now we only have 'pd' cross-validation option.")
+        else:
+            raise Exception("Now we only have 'pd' cross-validation option.")
         
     def __loss_func(self, k):
         from sklearn.model_selection import train_test_split
