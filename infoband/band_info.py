@@ -107,7 +107,7 @@ class InfoCorrBand():
         return mid
     """
     
-    def k_by_cv(self, cv_option = 'pd', verbose = False):
+    def k_by_cv(self, cv_option = 'brute', verbose = False):
         '''
         Find the optimal parameter k from cross-validation.
         '''
@@ -120,12 +120,14 @@ class InfoCorrBand():
                     break
                 score.append(self.__loss_func(k))
                 k += 1
-            score = np.array(score)
-            if verbose:
-                print(score)
-            return score.argmin() + 1
+        elif cv_option == 'brute':
+            score = [self.__loss_func(k) for k in range(1, N + 1)]
         else:
-            raise Exception("Now we only have 'pd' cross-validation option.")
+            raise Exception("No such cv_option.")
+        score = np.array(score)
+        if verbose:
+            print(score)
+        return score.argmin() + 1
         
     def __loss_func(self, k):
         from sklearn.model_selection import train_test_split
