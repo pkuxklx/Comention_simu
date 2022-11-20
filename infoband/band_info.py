@@ -8,6 +8,24 @@ import sys
 sys.path.append("..")
 from utils.adpt_correlation_threshold import AdptCorrThreshold
 # %%
+def moving_average(arr, win = 5, alpha = 0.8):
+    '''
+    win: 
+        length of the moving window
+    alpha: 
+        decay coefficient
+    '''
+    c = (win + 1) / 2 - 1 # weight[c], the central index
+    weight = np.array([alpha ** abs(c - i) for i in range(win)])
+    weight = weight / weight.sum()
+    l = len(arr)
+    new_arr = [0] * l
+    for i in range(l):
+        for k, w in enumerate(weight):
+            id = int(min(max(i + k - c, 0), l - 1))
+            new_arr[i] += w * arr[id]
+    return new_arr
+# %%
 class InfoCorrBand():
     '''
     Steps to get the estimator:
@@ -17,7 +35,7 @@ class InfoCorrBand():
     '''
     
     def __init__(self, X, L = None,  
-                 num_cv = 4, test_size = 0.4):
+                 num_cv = 4, test_size = None):
         '''
         X : 2-D array 
             Data. Each row is an observation. Each column is a random variable. Of size T*N.
@@ -46,7 +64,10 @@ class InfoCorrBand():
         self.scaling_factor = (np.log(self.N) / self.T) ** (-q / (2*alpha + 2))
         '''
         self.num_cv = num_cv
-        self.test_size = test_size
+        if test_size is None:
+            self.test_size = 2 / 3 # 1 / np.log(self.T)
+        else:
+            self.test_size = test_size
         self.eps = 1e-10
         
     def feed_info(self, L = None):
@@ -107,10 +128,13 @@ class InfoCorrBand():
         return mid
     """
     
-    def k_by_cv(self, cv_option = 'brute', verbose = False):
+    def k_by_cv(self, cv_option = 'fast_iter', verbose = False):
         '''
         Find the optimal parameter k from cross-validation.
         '''
+        if cv_option not in ['pd', 'brute', 'fast_iter']:
+            raise Exception("No such cv_option.")
+        
         N = self.N
         score = []
         if cv_option == 'pd':
@@ -120,21 +144,60 @@ class InfoCorrBand():
                     break
                 score.append(self.__loss_func(k))
                 k += 1
+            ans_k = np.array(score).argmin() + 1
         elif cv_option == 'brute':
             score = [self.__loss_func(k) for k in range(1, N + 1)]
-        else:
-            raise Exception("No such cv_option.")
-        score = np.array(score)
+            ans_k = np.array(score).argmin() + 1
         if verbose:
             print(score)
-        return score.argmin() + 1
+            plt.plot(score)
+            plt.show()
+        
+        if cv_option == 'fast_iter':
+            '''
+            This algorithm ~ log(N)
+            1. Initialize delta = N/4, interval = [1, N]
+            2. compute the score when k-1 in S = {0, delta, 2*delta, ...}
+            3. Find m, such that m*delta corresponds to the smallest score.
+            4. delta = delta/4, interval = [(m-1)*delta, (m+1)*delta], repeat step 2 and step 3 until delta = 1
+            5. expand interval a little bit, e.g., [low, up] -> [low - 2, up + 2], brute force search
+            '''
+            k_lower = 1
+            k_upper = N
+            delta = N // 4
+            
+            while 1:
+                k = k_lower
+                k_list, k_score = [], []
+                while k <= k_upper:
+                    k_score.append(self.__loss_func(k))
+                    k_list.append(k)
+                    k = k + 1 if k == k_upper else min(k + delta, k_upper)
+                id = np.array(k_score).argmin()
+                if delta == 1:
+                    # use MA, more robust
+                    MA_k_score = moving_average(k_score)
+                    MA_id = np.array(MA_k_score).argmin()
+                    ans_k = k_list[MA_id]
+                    break
+                
+                # the range of next iteration, is determined by this iteration's minimum position 'id'
+                k_lower = k_list[id - 1]
+                k_upper = k_list[id + 1]
+                new_range = k_upper - k_lower + 1
+                delta = new_range // 4 
+                if delta == 1:
+                    k_lower = max(k_lower - 2, 1)
+                    k_upper = min(k_upper + 2, N)
+            
+        return ans_k
         
     def __loss_func(self, k):
         from sklearn.model_selection import train_test_split
         v = self.num_cv
         score_i = np.zeros(v)
         for i in range(v):
-            X1, X2 = train_test_split(self.X, test_size = self.test_size)
+            X1, X2 = train_test_split(self.X, test_size = self.test_size) # test_size = proportion of X2
             o1 = InfoCorrBand(X1, self.L)
             o2 = InfoCorrBand(X2, self.L)
             R_est1 = o1.fit_info_corr_band(k)
