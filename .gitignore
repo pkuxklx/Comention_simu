@@ -1,6 +1,6 @@
-data/
-
+data old/
 *.txt
 *.pyc
 
-!*log*.txt
+!log/
+!data/
