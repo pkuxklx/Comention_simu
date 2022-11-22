@@ -82,7 +82,7 @@ class InfoCorrBand():
             raise Exception('The sizes of X and L do not match.')
         if not (L == L.transpose()).all(): # asymmetric
             warnings.warn('Input L-matrix is asymmetric.', DeprecationWarning)
-        self.L = (L + L.transpose()) /2
+        self.L = (L + L.transpose()) / 2
         self.__compute_orders()
         
     def __compute_orders(self):
@@ -112,7 +112,7 @@ class InfoCorrBand():
     def sample_cov(self):
         return np.cov(self.X, rowvar = False)
     
-    def sample_corr(self):
+    def sample_corr(self) -> np.ndarray:
         return np.corrcoef(self.X, rowvar = False)
     
     """
@@ -207,7 +207,7 @@ class InfoCorrBand():
         for i in range(v):
             X1, X2 = train_test_split(self.X, test_size = self.test_size) # test_size = proportion of X2
             o1 = InfoCorrBand(X1, self.L)
-            o2 = InfoCorrBand(X2, self.L)
+            o2 = InfoCorrBand(X2) # needn't to call  __compute_orders
             R_est1 = o1.fit_info_corr_band(k)
             R_est2 = o2.sample_corr()
             score_i[i] = LA.norm(R_est1 - R_est2) ** 2
@@ -216,14 +216,18 @@ class InfoCorrBand():
     def fit_info_corr_band(self, k):
         R_est = self.sample_corr()
         N = self.N
-        rowSort = self.rowSort
-        if rowSort is None:
+        rS = self.rowSort
+        if rS is None:
             raise Exception("Please call InfoCorrBand.feed_info() function first.")
+        Taper = ((rS <= k) & (rS.T <= k)).astype(int)
+        return R_est * Taper # Hadamard product
+        '''
         for i in range(N):
             for j in range(N):
                 if not (rowSort[i][j] <= k and rowSort[j][i] <= k):
                     R_est[i][j] = 0
         return R_est
+        '''
     
     def fit_info_cov_band(self, k):
         Sigma_est = self.sample_cov() # sample covariance

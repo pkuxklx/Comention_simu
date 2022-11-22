@@ -1,0 +1,37 @@
+v3: __loss_func, 'o2 = InfoCorrBand(X2)', doesn't call __compute_orders
+
+fro 0.5 near 0.5
+0 5
+
+  _     ._   __/__   _ _  _  _ _/_   Recorded: 21:46:54  Samples:  70134
+ /_//_/// /_\ / //_// / //_'/ //     Duration: 320.499   CPU time: 1234.750
+/   _/                      v4.4.0
+
+Program: d:\anaconda3\envs\simu\lib\site-packages\ipykernel_launcher.py --ip=127.0.0.1 --stdin=9013 --control=9011 --hb=9010 --Session.signature_scheme="hmac-sha256" --Session.key=b"dc3e726b-f951-4209-9259-276305e80211" --shell=9012 --transport="tcp" --iopub=9014 --f=c:\Users\lx\AppData\Roaming\jupyter\runtime\kernel-v2-16364DKn2VJeRds03.json
+
+320.499 <module>  None
+├─ 311.603 InfoCorrBand.auto_fit  infoband\band_info.py:252
+│  └─ 311.266 InfoCorrBand.k_by_cv  infoband\band_info.py:139
+│     └─ 311.232 InfoCorrBand.__loss_func  infoband\band_info.py:203
+│        ├─ 250.930 InfoCorrBand.fit_info_corr_band  infoband\band_info.py:216
+│        │  ├─ 247.136 [self]  None
+│        │  └─ 3.794 InfoCorrBand.sample_corr  infoband\band_info.py:115
+│        │     └─ 3.789 corrcoef  <__array_function__ internals>:177
+│        │           [104 frames hidden]  <__array_function__ internals>, numpy...
+│        ├─ 53.843 InfoCorrBand.__init__  infoband\band_info.py:37
+│        │  └─ 52.862 InfoCorrBand.feed_info  infoband\band_info.py:73
+│        │     ├─ 48.862 InfoCorrBand.__compute_orders  infoband\band_info.py:88
+│        │     │  ├─ 43.539 <lambda>  infoband\band_info.py:99
+│        │     │  │  └─ 42.631 argsort  <__array_function__ internals>:177
+│        │     │  │        [14 frames hidden]  <__array_function__ internals>, numpy...
+│        │     │  └─ 5.323 [self]  None
+│        │     └─ 3.902 [self]  None
+│        └─ 3.611 InfoCorrBand.sample_corr  infoband\band_info.py:115
+│           └─ 3.610 corrcoef  <__array_function__ internals>:177
+│                 [45 frames hidden]  <__array_function__ internals>, numpy...
+└─ 8.863 gen_L  None
+   └─ 8.657 gen_eta_sequence  None
+      ├─ 3.663 [self]  None
+      └─ 3.248 <listcomp>  None
+
+
