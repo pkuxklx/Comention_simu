@@ -96,9 +96,17 @@ class InfoCorrBand():
         N = self.N
         rowSort = np.zeros((N, N))
         for i in range(N):
+            f = lambda x: np.argsort(x)
+            rowSort[i] = N - f(f(L[i]))
+            '''
             Order = np.argsort(L[i])[::-1]
+            # tmp = np.zeros(N) # does accelerate 44%
             for k in range(N):
+                # tmp[Order[k]] = k+1 #
                 rowSort[i][Order[k]] = k+1
+            # N - np.argsort(np.argsort(L[i])) == rowSort[i])), it has been tested
+            # rowSort[i] = tmp #
+            '''
         self.rowSort = rowSort
         
     def sample_cov(self):
@@ -182,7 +190,7 @@ class InfoCorrBand():
                     break
                 
                 # the range of next iteration, is determined by this iteration's minimum position 'id'
-                k_lower = k_list[id - 1]
+                k_lower = k_list[max(id - 1, 0)]
                 k_upper = k_list[id + 1]
                 new_range = k_upper - k_lower + 1
                 delta = new_range // 4 
