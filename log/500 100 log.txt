@@ -1,0 +1,164 @@
+bottleneck, is still __compute_orders
+
+fro 0.5 near 0.5
+0 18
+
+  _     ._   __/__   _ _  _  _ _/_   Recorded: 00:47:09  Samples:  163823
+ /_//_/// /_\ / //_// / //_'/ //     Duration: 185.011   CPU time: 597.125
+/   _/                      v4.4.0
+
+Program: d:\anaconda3\envs\simu\lib\site-packages\ipykernel_launcher.py --ip=127.0.0.1 --stdin=9003 --control=9001 --hb=9000 --Session.signature_scheme="hmac-sha256" --Session.key=b"a79390b4-bb4b-42c3-9a0d-a1bdba78b7ab" --shell=9002 --transport="tcp" --iopub=9004 --f=c:\Users\lx\AppData\Roaming\jupyter\runtime\kernel-v2-9664Zm85tWJl5wXh.json
+
+185.010 <module>  None
+├─ 156.756 InfoCorrBand.auto_fit  infoband\band_info.py:256
+│  └─ 156.735 InfoCorrBand.k_by_cv  infoband\band_info.py:139
+│     └─ 156.658 InfoCorrBand.__loss_func  infoband\band_info.py:203
+│        ├─ 127.680 InfoCorrBand.__init__  infoband\band_info.py:37
+│        │  ├─ 125.540 InfoCorrBand.feed_info  infoband\band_info.py:73
+│        │  │  ├─ 117.822 InfoCorrBand.__compute_orders  infoband\band_info.py:88
+│        │  │  │  ├─ 103.305 <lambda>  infoband\band_info.py:99
+│        │  │  │  │  ├─ 100.969 argsort  <__array_function__ internals>:177
+│        │  │  │  │  │     [14 frames hidden]  <__array_function__ internals>, numpy...
+│        │  │  │  │  └─ 2.335 [self]  None
+│        │  │  │  └─ 14.518 [self]  None
+│        │  │  └─ 7.613 [self]  None
+│        │  └─ 2.072 eye  numpy\lib\twodim_base.py:162
+│        │        [6 frames hidden]  numpy, <built-in>
+│        ├─ 13.315 InfoCorrBand.fit_info_corr_band  infoband\band_info.py:216
+│        │  ├─ 8.611 InfoCorrBand.sample_corr  infoband\band_info.py:115
+│        │  │  └─ 8.596 corrcoef  <__array_function__ internals>:177
+│        │  │        [107 frames hidden]  <__array_function__ internals>, numpy...
+│        │  └─ 3.970 [self]  None
+│        ├─ 8.999 InfoCorrBand.sample_corr  infoband\band_info.py:115
+│        │  └─ 8.996 corrcoef  <__array_function__ internals>:177
+│        │        [107 frames hidden]  <__array_function__ internals>, numpy...
+│        └─ 4.771 [self]  None
+└─ 28.082 gen_L  None
+   └─ 27.434 gen_eta_sequence  None
+      ├─ 13.011 [self]  None
+      ├─ 8.949 <listcomp>  None
+      └─ 2.929 RandomState.randint  None
+            [2 frames hidden]  <built-in>
+
+
+1 14
+
+  _     ._   __/__   _ _  _  _ _/_   Recorded: 00:50:46  Samples:  128274
+ /_//_/// /_\ / //_// / //_'/ //     Duration: 141.096   CPU time: 472.047
+/   _/                      v4.4.0
+
+Program: d:\anaconda3\envs\simu\lib\site-packages\ipykernel_launcher.py --ip=127.0.0.1 --stdin=9003 --control=9001 --hb=9000 --Session.signature_scheme="hmac-sha256" --Session.key=b"a79390b4-bb4b-42c3-9a0d-a1bdba78b7ab" --shell=9002 --transport="tcp" --iopub=9004 --f=c:\Users\lx\AppData\Roaming\jupyter\runtime\kernel-v2-9664Zm85tWJl5wXh.json
+
+141.094 <module>  None
+├─ 121.724 InfoCorrBand.auto_fit  infoband\band_info.py:256
+│  └─ 121.707 InfoCorrBand.k_by_cv  infoband\band_info.py:139
+│     └─ 121.644 InfoCorrBand.__loss_func  infoband\band_info.py:203
+│        ├─ 98.398 InfoCorrBand.__init__  infoband\band_info.py:37
+│        │  ├─ 96.115 InfoCorrBand.feed_info  infoband\band_info.py:73
+│        │  │  ├─ 89.434 InfoCorrBand.__compute_orders  infoband\band_info.py:88
+│        │  │  │  ├─ 79.292 <lambda>  infoband\band_info.py:99
+│        │  │  │  │  ├─ 77.744 argsort  <__array_function__ internals>:177
+│        │  │  │  │  │     [14 frames hidden]  <__array_function__ internals>, numpy...
+│        │  │  │  │  └─ 1.548 [self]  None
+│        │  │  │  └─ 10.142 [self]  None
+│        │  │  └─ 6.582 [self]  None
+│        │  └─ 2.254 eye  numpy\lib\twodim_base.py:162
+│        │        [4 frames hidden]  numpy, <built-in>
+│        ├─ 10.795 InfoCorrBand.fit_info_corr_band  infoband\band_info.py:216
+│        │  ├─ 6.872 InfoCorrBand.sample_corr  infoband\band_info.py:115
+│        │  │  └─ 6.868 corrcoef  <__array_function__ internals>:177
+│        │  │        [119 frames hidden]  <__array_function__ internals>, numpy...
+│        │  └─ 2.982 [self]  None
+│        ├─ 7.175 InfoCorrBand.sample_corr  infoband\band_info.py:115
+│        │  └─ 7.171 corrcoef  <__array_function__ internals>:177
+│        │        [95 frames hidden]  <__array_function__ internals>, numpy...
+│        └─ 3.487 [self]  None
+└─ 19.318 gen_L  None
+   └─ 18.842 gen_eta_sequence  None
+      ├─ 7.687 [self]  None
+      ├─ 7.147 <listcomp>  None
+      └─ 1.968 RandomState.randint  None
+            [2 frames hidden]  <built-in>
+
+
+2 17
+
+  _     ._   __/__   _ _  _  _ _/_   Recorded: 00:53:19  Samples:  87585
+ /_//_/// /_\ / //_// / //_'/ //     Duration: 95.435    CPU time: 338.281
+/   _/                      v4.4.0
+
+Program: d:\anaconda3\envs\simu\lib\site-packages\ipykernel_launcher.py --ip=127.0.0.1 --stdin=9003 --control=9001 --hb=9000 --Session.signature_scheme="hmac-sha256" --Session.key=b"a79390b4-bb4b-42c3-9a0d-a1bdba78b7ab" --shell=9002 --transport="tcp" --iopub=9004 --f=c:\Users\lx\AppData\Roaming\jupyter\runtime\kernel-v2-9664Zm85tWJl5wXh.json
+
+95.437 <module>  None
+├─ 88.138 InfoCorrBand.auto_fit  infoband\band_info.py:256
+│  └─ 88.113 InfoCorrBand.k_by_cv  infoband\band_info.py:139
+│     └─ 88.070 InfoCorrBand.__loss_func  infoband\band_info.py:203
+│        ├─ 70.400 InfoCorrBand.__init__  infoband\band_info.py:37
+│        │  ├─ 69.043 InfoCorrBand.feed_info  infoband\band_info.py:73
+│        │  │  ├─ 63.735 InfoCorrBand.__compute_orders  infoband\band_info.py:88
+│        │  │  │  ├─ 56.964 <lambda>  infoband\band_info.py:99
+│        │  │  │  │  ├─ 55.857 argsort  <__array_function__ internals>:177
+│        │  │  │  │  │     [14 frames hidden]  <__array_function__ internals>, numpy...
+│        │  │  │  │  └─ 1.107 [self]  None
+│        │  │  │  └─ 6.770 [self]  None
+│        │  │  └─ 5.252 [self]  None
+│        │  └─ 1.325 eye  numpy\lib\twodim_base.py:162
+│        │        [6 frames hidden]  numpy, <built-in>
+│        ├─ 8.063 InfoCorrBand.fit_info_corr_band  infoband\band_info.py:216
+│        │  ├─ 5.049 InfoCorrBand.sample_corr  infoband\band_info.py:115
+│        │  │  └─ 5.043 corrcoef  <__array_function__ internals>:177
+│        │  │        [101 frames hidden]  <__array_function__ internals>, numpy...
+│        │  └─ 2.755 [self]  None
+│        ├─ 5.222 InfoCorrBand.sample_corr  infoband\band_info.py:115
+│        │  └─ 5.213 corrcoef  <__array_function__ internals>:177
+│        │        [82 frames hidden]  <__array_function__ internals>, numpy...
+│        ├─ 3.158 [self]  None
+│        └─ 0.962 norm  scipy\linalg\_misc.py:17
+│              [26 frames hidden]  scipy, numpy, <built-in>, <__array_fu...
+└─ 7.271 gen_L  None
+   └─ 7.116 gen_eta_sequence  None
+      ├─ 2.910 <listcomp>  None
+      └─ 2.555 [self]  None
+
+
+3 16
+
+  _     ._   __/__   _ _  _  _ _/_   Recorded: 00:55:15  Samples:  148374
+ /_//_/// /_\ / //_// / //_'/ //     Duration: 166.287   CPU time: 534.844
+/   _/                      v4.4.0
+
+Program: d:\anaconda3\envs\simu\lib\site-packages\ipykernel_launcher.py --ip=127.0.0.1 --stdin=9003 --control=9001 --hb=9000 --Session.signature_scheme="hmac-sha256" --Session.key=b"a79390b4-bb4b-42c3-9a0d-a1bdba78b7ab" --shell=9002 --transport="tcp" --iopub=9004 --f=c:\Users\lx\AppData\Roaming\jupyter\runtime\kernel-v2-9664Zm85tWJl5wXh.json
+
+166.286 <module>  None
+├─ 143.264 InfoCorrBand.auto_fit  infoband\band_info.py:256
+│  └─ 143.240 InfoCorrBand.k_by_cv  infoband\band_info.py:139
+│     └─ 143.158 InfoCorrBand.__loss_func  infoband\band_info.py:203
+│        ├─ 116.032 InfoCorrBand.__init__  infoband\band_info.py:37
+│        │  ├─ 113.378 InfoCorrBand.feed_info  infoband\band_info.py:73
+│        │  │  ├─ 105.767 InfoCorrBand.__compute_orders  infoband\band_info.py:88
+│        │  │  │  ├─ 93.410 <lambda>  infoband\band_info.py:99
+│        │  │  │  │  ├─ 91.359 argsort  <__array_function__ internals>:177
+│        │  │  │  │  │     [14 frames hidden]  <__array_function__ internals>, numpy...
+│        │  │  │  │  └─ 2.050 [self]  None
+│        │  │  │  └─ 12.357 [self]  None
+│        │  │  └─ 7.507 [self]  None
+│        │  └─ 2.611 eye  numpy\lib\twodim_base.py:162
+│        │        [6 frames hidden]  numpy, <built-in>
+│        ├─ 12.666 InfoCorrBand.fit_info_corr_band  infoband\band_info.py:216
+│        │  ├─ 8.103 InfoCorrBand.sample_corr  infoband\band_info.py:115
+│        │  │  └─ 8.099 corrcoef  <__array_function__ internals>:177
+│        │  │        [104 frames hidden]  <__array_function__ internals>, numpy...
+│        │  └─ 3.393 [self]  None
+│        ├─ 8.330 InfoCorrBand.sample_corr  infoband\band_info.py:115
+│        │  └─ 8.325 corrcoef  <__array_function__ internals>:177
+│        │        [84 frames hidden]  <__array_function__ internals>, numpy...
+│        └─ 4.030 [self]  None
+└─ 22.928 gen_L  None
+   └─ 22.256 gen_eta_sequence  None
+      ├─ 9.140 [self]  None
+      ├─ 8.059 <listcomp>  None
+      └─ 2.510 RandomState.randint  None
+            [2 frames hidden]  <built-in>
+
+
+4 15

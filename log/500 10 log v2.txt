@@ -1,0 +1,35 @@
+v2: __compute_orders accelerated, all use np.argsort(.)
+
+fro 0.5 near 0.5
+0 5
+
+  _     ._   __/__   _ _  _  _ _/_   Recorded: 21:32:57  Samples:  126243
+ /_//_/// /_\ / //_// / //_'/ //     Duration: 384.358   CPU time: 1427.359
+/   _/                      v4.4.0
+
+Program: d:\anaconda3\envs\simu\lib\site-packages\ipykernel_launcher.py --ip=127.0.0.1 --stdin=9008 --control=9006 --hb=9005 --Session.signature_scheme="hmac-sha256" --Session.key=b"0b5f22b7-ea34-423a-ab13-aa96930eccce" --shell=9007 --transport="tcp" --iopub=9009 --f=c:\Users\lx\AppData\Roaming\jupyter\runtime\kernel-v2-16364axapxgigNIDR.json
+
+384.357 <module>  None
+├─ 365.744 InfoCorrBand.auto_fit  infoband\band_info.py:252
+│  └─ 365.394 InfoCorrBand.k_by_cv  infoband\band_info.py:139
+│     └─ 365.343 InfoCorrBand.__loss_func  infoband\band_info.py:203
+│        ├─ 253.114 InfoCorrBand.fit_info_corr_band  infoband\band_info.py:216
+│        │  ├─ 249.065 [self]  None
+│        │  └─ 4.048 InfoCorrBand.sample_corr  infoband\band_info.py:115
+│        │     └─ 4.038 corrcoef  <__array_function__ internals>:177
+│        │           [116 frames hidden]  <__array_function__ internals>, numpy...
+│        ├─ 104.328 InfoCorrBand.__init__  infoband\band_info.py:37
+│        │  └─ 103.096 InfoCorrBand.feed_info  infoband\band_info.py:73
+│        │     ├─ 94.699 InfoCorrBand.__compute_orders  infoband\band_info.py:88
+│        │     │  ├─ 82.747 <lambda>  infoband\band_info.py:99
+│        │     │  │  └─ 80.725 argsort  <__array_function__ internals>:177
+│        │     │  │        [14 frames hidden]  <__array_function__ internals>, numpy...
+│        │     │  └─ 11.952 [self]  None
+│        │     └─ 8.278 [self]  None
+│        └─ 4.079 InfoCorrBand.sample_corr  infoband\band_info.py:115
+│           └─ 4.076 corrcoef  <__array_function__ internals>:177
+│                 [79 frames hidden]  <__array_function__ internals>, numpy...
+└─ 18.581 gen_L  None
+   └─ 18.184 gen_eta_sequence  None
+      ├─ 7.653 [self]  None
+      └─ 6.320 <listcomp>  None
