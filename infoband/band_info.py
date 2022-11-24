@@ -195,18 +195,19 @@ class InfoCorrBand():
                     ans_k = k_list[MA_id]
                     plt.figure(figsize = (4, 2))
                     plt.subplot(1, 2, 1)
-                    plt.plot(k_score)
+                    plt.plot(k_list, k_score)
                     plt.subplot(1, 2, 2)
-                    plt.plot(MA_k_score)
+                    plt.plot(k_list, MA_k_score)
                     plt.show()
                     break
                 
                 # the range of next iteration, is determined by this iteration's minimum position 'id'
                 k_lower = k_list[max(id - 1, 0)]
-                k_upper = k_list[id + 1]
+                k_upper = k_list[min(id + 1, len(k_list) - 1)]
                 new_range = k_upper - k_lower + 1
                 delta = new_range // 4 
-                if delta == 1:
+                if delta <= 2:
+                    delta = 1
                     k_lower = max(k_lower - 2, 1)
                     k_upper = min(k_upper + 2, N)
             
