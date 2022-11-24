@@ -170,6 +170,12 @@ class InfoCorrBand():
             4. delta = delta/4, interval = [(m-1)*delta, (m+1)*delta], repeat step 2 and step 3 until delta = 1
             5. expand interval a little bit, e.g., [low, up] -> [low - 2, up + 2], brute force search
             '''
+            score_dict = dict()
+            def tmp__loss_func(k):
+                if k not in score_dict:
+                    score_dict[k] = self.__loss_func(k)
+                return score_dict[k]
+                    
             k_lower = 1
             k_upper = N
             delta = N // 4
@@ -178,7 +184,7 @@ class InfoCorrBand():
                 k = k_lower
                 k_list, k_score = [], []
                 while k <= k_upper:
-                    k_score.append(self.__loss_func(k))
+                    k_score.append(tmp__loss_func(k))
                     k_list.append(k)
                     k = k + 1 if k == k_upper else min(k + delta, k_upper)
                 id = np.array(k_score).argmin()
@@ -187,6 +193,12 @@ class InfoCorrBand():
                     MA_k_score = moving_average(k_score)
                     MA_id = np.array(MA_k_score).argmin()
                     ans_k = k_list[MA_id]
+                    plt.figure(figsize = (4, 2))
+                    plt.subplot(1, 2, 1)
+                    plt.plot(k_score)
+                    plt.subplot(1, 2, 2)
+                    plt.plot(MA_k_score)
+                    plt.show()
                     break
                 
                 # the range of next iteration, is determined by this iteration's minimum position 'id'
