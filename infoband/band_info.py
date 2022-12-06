@@ -218,7 +218,7 @@ class InfoCorrBand():
         v = self.num_cv
         score_i = np.zeros(v)
         for i in range(v):
-            X1, X2 = train_test_split(self.X, test_size = self.test_size) # test_size = proportion of X2
+            X1, X2 = train_test_split(self.X, test_size = self.test_size, random_state = i) # test_size = proportion of X2
             o1 = InfoCorrBand(X1, self.L)
             o2 = InfoCorrBand(X2) # needn't to call  __compute_orders
             R_est1 = o1.fit_info_corr_band(k)
