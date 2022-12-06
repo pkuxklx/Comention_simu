@@ -85,6 +85,7 @@ def estimate(G, X1):
 m, S_new, params = estimate(G, X1)
 print(params)
 
+# %%
 
 def dd_rslt(S, m, norm_type = 'fro'):
     dd = {"S": LA.norm(S),

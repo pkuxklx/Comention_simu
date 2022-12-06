@@ -17,7 +17,8 @@ class AdptCorrThreshold(CovEstWithNetwork):
     The threshold parameter uses network information
     """
 
-    def __init__(self, DF, DF_G, tau_method="linear", threshold_method="soft threshold", 
+    def __init__(self, DF, DF_G, 
+                 tau_method = "linear", threshold_method = "soft threshold", 
                  num_cv = 4, test_size = 0.4, cv_init_value = 0, 
                  cv_split_method = "random", split_point = [150], 
                  *output_path, **kwargs):
@@ -98,8 +99,21 @@ class AdptCorrThreshold(CovEstWithNetwork):
         if show_matrices:
             print(_R_est[:3,:3], "\n\n")
         _R_est = _R_est - np.diag(np.diag(_R_est)) + np.eye(N)
-        _S_est =  (self.sample_std_diagonal) @ _R_est @(self.sample_std_diagonal)
-        return _S_est
+        return _R_est
+    
+    def fit_adaptive_cov_threshold(self, params = None, show_matrices = False, timer = False, **model_params):
+        R_est = self.fit_adaptive_corr_threshold(params, show_matrices, timer, model_params)
+        S_est = (self.sample_std_diagonal) @ R_est @ (self.sample_std_diagonal)
+        return S_est
+    
+    def auto_fit(self, threshold_method = None): 
+        if threshold_method is not None: # change self.threshold_method
+            self.threshold_method = threshold_method
+        b = self.find_smallest_threshold_for_pd()
+        params = self.params_by_cv('pd', b)
+        R_est = self.fit_adaptive_corr_threshold(params)   
+        S_est = self.sample_std_diagonal @ R_est @ self.sample_std_diagonal
+        return R_est, S_est, params
 
     def loss_func(self, params):
         from sklearn.model_selection import train_test_split

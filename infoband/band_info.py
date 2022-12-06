@@ -69,6 +69,7 @@ class InfoCorrBand():
         else:
             self.test_size = test_size
         self.eps = 1e-10
+        self.D_est = np.diag(np.diag(self.sample_cov())) ** 0.5
         
     def feed_info(self, L = None):
         '''
@@ -206,7 +207,7 @@ class InfoCorrBand():
                 k_upper = k_list[min(id + 1, len(k_list) - 1)]
                 new_range = k_upper - k_lower + 1
                 delta = new_range // 4 
-                if delta <= 2:
+                if delta <= 3:
                     delta = 1
                     k_lower = max(k_lower - 2, 1)
                     k_upper = min(k_upper + 2, N)
@@ -243,9 +244,7 @@ class InfoCorrBand():
         '''
     
     def fit_info_cov_band(self, k):
-        Sigma_est = self.sample_cov() # sample covariance
-        D_est = np.sqrt(np.diag(np.diag(Sigma_est))) # sample marginal deviations
-        return D_est @ self.fit_info_corr_band(k) @ D_est
+        return self.D_est @ self.fit_info_corr_band(k) @ self.D_est
     
     def plot_k_pd(self, k_range = None):
         '''
@@ -268,7 +267,9 @@ class InfoCorrBand():
     
     def auto_fit(self):
         k = self.k_by_cv()
-        return self.fit_info_corr_band(k), self.fit_info_cov_band(k), k
+        R_est = self.fit_info_corr_band(k)
+        S_est = self.D_est @ R_est @ self.D_est
+        return R_est, S_est, k
     
     # def params_by_cv(self)
 # %%

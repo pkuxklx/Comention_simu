@@ -1,7 +1,8 @@
 # %%
 import numpy as np
 import matplotlib.pyplot as plt
-import random
+import random, os
+from infoband.band_info import InfoCorrBand
 
 # %%
 def cov2cor(S: np.ndarray):
