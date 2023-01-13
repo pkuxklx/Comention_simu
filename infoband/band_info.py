@@ -181,6 +181,12 @@ class InfoCorrBand():
             k_upper = N
             delta = N // 4
             
+            
+            my_arr = [tmp__loss_func(k) for k in range(1, 301, 2)]
+            my_id = range(1, 301, 2)
+            plt.plot(my_id, my_arr)
+            plt.show()
+            
             while 1:
                 k = k_lower
                 k_list, k_score = [], []
