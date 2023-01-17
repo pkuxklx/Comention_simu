@@ -90,7 +90,7 @@ def gen_L(S, eta, verbose = False, draw_type = 'random', is_random = False,
     return res if verbose else L_eta
 
 # %%
-def get_title_1(ord, cov_cor, draw_type = 'random', eta, N, T, rho, near_factor = None):
+def get_title_1(ord, cov_cor, eta, N, T, rho, draw_type = 'random', near_factor = None):
     title = "{ord}, {cov_cor} error, {draw_type}, eta=({eta}, {near_factor}), (N, T)=({N}, {T}), rho={rho}".format(
         ord = ord, cov_cor = cov_cor, draw_type = draw_type, eta = eta, N = N, T = T, rho = rho, near_factor = near_factor)
     return title

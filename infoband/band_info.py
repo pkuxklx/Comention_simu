@@ -157,19 +157,21 @@ class InfoCorrBand():
         elif cv_option == 'brute':
             score = [self.__loss_func(k) for k in range(1, N + 1)]
             ans_k = np.array(score).argmin() + 1
+            
         if verbose:
-            print(score)
-            plt.plot(score)
+            plt.plot(range(1, len(score) + 1), score)
             plt.show()
         
         if cv_option == 'fast_iter':
             '''
-            This algorithm ~ log(N)
+            This algorithm is an adapted version of the ternary search algorithm for the minimum of a U-shaped curve. 
+            The time complexity ~ log(N).
             1. Initialize delta = N/4, interval = [1, N]
             2. compute the score when k-1 in S = {0, delta, 2*delta, ...}
             3. Find m, such that m*delta corresponds to the smallest score.
-            4. delta = delta/4, interval = [(m-1)*delta, (m+1)*delta], repeat step 2 and step 3 until delta = 1
-            5. expand interval a little bit, e.g., [low, up] -> [low - 2, up + 2], brute force search
+            4. delta = delta/4, interval = [(m-1)*delta, (m+1)*delta], 
+                then repeat step 2 and step 3 until delta <= threshold_value.
+            5. expand interval a little bit, e.g., [low, up] -> [low - 2, up + 2], then brute force search.
             '''
             score_dict = dict()
             def tmp__loss_func(k):
@@ -180,12 +182,6 @@ class InfoCorrBand():
             k_lower = 1
             k_upper = N
             delta = N // 4
-            
-            
-            my_arr = [tmp__loss_func(k) for k in range(1, 301, 2)]
-            my_id = range(1, 301, 2)
-            plt.plot(my_id, my_arr)
-            plt.show()
             
             while 1:
                 k = k_lower
@@ -271,8 +267,11 @@ class InfoCorrBand():
     def __is_pd(self, k) -> bool:
         return np.linalg.eigvals(self.fit_info_corr_band(k))[-1] > self.eps
     
-    def auto_fit(self):
-        k = self.k_by_cv()
+    def auto_fit(self, cv_option = 'fast_iter', verbose = False):
+        '''
+        param verbose is effective when cv_option = 'brute'. 
+        '''
+        k = self.k_by_cv(cv_option, verbose)
         R_est = self.fit_info_corr_band(k)
         S_est = self.D_est @ R_est @ self.D_est
         return R_est, S_est, k
