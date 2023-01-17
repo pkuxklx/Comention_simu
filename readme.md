@@ -27,6 +27,6 @@ When $\eta < 1$, $S^L_k$ is a random matrix. It introduces extra randomness to t
 
 See [lx_simulation_other.ipynb](lx_simulation_other.ipynb). Results see the file [other_methods.csv](other_methods.csv).
 
-### Data Processing
+### Data Processing & Query
 
 See [lx_data_process.ipynb](lx_data_process.ipynb).
