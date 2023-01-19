@@ -143,7 +143,7 @@ class CovEstWithNetwork(Covariance):
         self.G = DF_G
         return self
 
-    def correlation_threshold_level(self,DF_G, tau_method='probit', params =None):
+    def correlation_threshold_level(self, DF_G, tau_method='probit', params =None):
         """
         This generates a matrix mat_threshold that contains the individual threshold values
         if tau_method = 'direct': use the value in DF_G 

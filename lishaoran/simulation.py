@@ -1,4 +1,8 @@
 # %%
+import os
+os.path
+
+# %%
 # Import libraries
 import matplotlib.pyplot as plt
 import numpy as np
@@ -77,10 +81,11 @@ def estimate(G, X1):
     b = m.find_smallest_threshold_for_pd()
     params = m.params_by_cv('pd', b)
     S_new = m.fit_adaptive_corr_threshold(params)   
-    return m,S_new, params
+    return m, S_new, params
 m, S_new, params = estimate(G, X1)
 print(params)
 
+# %%
 
 def dd_rslt(S, m, norm_type = 'fro'):
     dd = {"S": LA.norm(S),
@@ -123,8 +128,7 @@ heatmap(m.sample_cov())
 heatmap(m.lw_lin_shrink())
 heatmap(m.nonlin_shrink())
 # %%
-[estimate(G, generate_sample(S)) for i in range(100)]
-
+# [estimate(G, generate_sample(S)) for i in range(100)]
 
 # %%
 S1 = m.fit_adaptive_corr_threshold(params = [2,0])
@@ -165,4 +169,6 @@ pd.set_option("precision", 2)
 df = df.set_index(['rho', 'scale'])
 with open('rslt.json', 'w') as f:
     f.write(df.to_latex())
+# %%
+df
 # %%

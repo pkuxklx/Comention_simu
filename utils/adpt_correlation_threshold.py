@@ -9,15 +9,19 @@ from wlpy.report import Timer
 tt = Timer()
 
 
-class AdptCorrThreshold(CovEstWithNetwork):
+class AdptCorrThreshold(CovEstWithNetwork): 
+    # After looking up 'super()' in the script, I find there isn't any connection with the father class
     """
     option: "adaptive correlation threshold"
     We apply generalized thresholding to the correlation matrix
     The threshold parameter uses network information
     """
 
-
-    def __init__(self, DF, DF_G, tau_method="linear",threshold_method="soft threshold", num_cv = 4, test_size = 0.4, cv_init_value = 0, cv_split_method = "random", split_point = [150], *output_path, **kwargs):
+    def __init__(self, DF, DF_G, 
+                 tau_method = "linear", threshold_method = "soft threshold", 
+                 num_cv = 4, test_size = 0.4, cv_init_value = 0, 
+                 cv_split_method = "random", split_point = [150], 
+                 *output_path, **kwargs):
         super().__init__(DF)
         self.X = DF
         self.G = DF_G
@@ -33,7 +37,6 @@ class AdptCorrThreshold(CovEstWithNetwork):
         self.tau_method= tau_method
         self.threshold_method = threshold_method
         self.num_cv = num_cv
-
 
         self.test_size = test_size
         self.cv_init_value = cv_init_value
@@ -66,7 +69,7 @@ class AdptCorrThreshold(CovEstWithNetwork):
             X = np.array([intercept_term] + endog)
             _Tau = (X.transpose()@params).reshape([N,N]) * scaling_factor
             return _Tau
-        elif self.tau_method == "linear" and len(params) == 2:
+        elif self.tau_method == "linear" and len(params) == 2: # default
             _Tau1 = (params[0] + params[1]*self.NPG) * scaling_factor
             return _Tau1
         elif self.tau_method == "simple" and len(params) == 1:
@@ -75,7 +78,6 @@ class AdptCorrThreshold(CovEstWithNetwork):
         else: 
             _Tau = None
             print("No such method")
-
 
     def fit_adaptive_corr_threshold(self, params = None, show_matrices = False, timer = False, **model_params):
         """
@@ -97,8 +99,21 @@ class AdptCorrThreshold(CovEstWithNetwork):
         if show_matrices:
             print(_R_est[:3,:3], "\n\n")
         _R_est = _R_est - np.diag(np.diag(_R_est)) + np.eye(N)
-        _S_est =  (self.sample_std_diagonal) @ _R_est @(self.sample_std_diagonal)
-        return _S_est
+        return _R_est
+    
+    def fit_adaptive_cov_threshold(self, params = None, show_matrices = False, timer = False, **model_params):
+        R_est = self.fit_adaptive_corr_threshold(params, show_matrices, timer, model_params)
+        S_est = (self.sample_std_diagonal) @ R_est @ (self.sample_std_diagonal)
+        return S_est
+    
+    def auto_fit(self, threshold_method = None): 
+        if threshold_method is not None: # change self.threshold_method
+            self.threshold_method = threshold_method
+        b = self.find_smallest_threshold_for_pd()
+        params = self.params_by_cv('pd', b)
+        R_est = self.fit_adaptive_corr_threshold(params)   
+        S_est = self.sample_std_diagonal @ R_est @ self.sample_std_diagonal
+        return R_est, S_est, params
 
     def loss_func(self, params):
         from sklearn.model_selection import train_test_split
@@ -113,17 +128,17 @@ class AdptCorrThreshold(CovEstWithNetwork):
                 S_train = AdptCorrThreshold(
                     A, self.G, self.tau_method, self.threshold_method, sign=self.R_sign).fit_adaptive_corr_threshold(params)
                 S_validation = np.cov(np.array(B), rowvar=False)
-                score[v] = LA.norm(S_train - S_validation)**2
+                score[v] = LA.norm(S_train - S_validation)**2 # frobenius norm
                 v = v+1
 
-        elif self.cv_split_method == "random":
+        elif self.cv_split_method == "random": # default
             for v in range(V):
                 # tt.start()
                 A, B = train_test_split(self.X, test_size=self.test_size)
                 S_train = AdptCorrThreshold(
                     A, self.G, self.tau_method, self.threshold_method, sign = self.R_sign).fit_adaptive_corr_threshold(params)
                 S_validation = np.cov(np.array(B), rowvar= False)
-                score[v] = LA.norm(S_train - S_validation)**2
+                score[v] = LA.norm(S_train - S_validation)**2 
                 # tt.click()
         average_score = score.mean()
         
