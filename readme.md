@@ -1,11 +1,14 @@
 ### Generate Observations
 
-Set the seed as follows for any $(N, T, S_{N\times N})$. $S$ is the covariance matrix.
+For any $(N, T, S_{N\times N})$, we generate 100 observations as follows. $S$ is the covariance matrix.
 
 ```python
 import numpy as np
-rng = np.random.RandomState(seed = 1)
-X = rng.multivariate_normal(mean = np.zeros(N), cov = S, size = T)
+for i in range(100):
+    ...
+    X = np.random.RandomState(seed = i).multivariate_normal(mean = np.zeros(N), cov = S, size = T)
+    L = gen_L(..., rand_seed = i) # only intended for our proposed estimator
+    ...
 ```
 
 ### Numerical Simulation
@@ -13,7 +16,10 @@ X = rng.multivariate_normal(mean = np.zeros(N), cov = S, size = T)
 ##### Metric
 
 We use the error rate
-\[ \frac{\|\hat A \|}{\| A - \hat A \|} \]
+
+$$
+\frac{\|\hat A \|}{\| A - \hat A \|}
+$$
 
 as the metric. Here we investigate the Frobenius norm and the matrix-2 norm.
 
