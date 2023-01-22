@@ -100,7 +100,7 @@ def save_data_fig(x, ord, cov_cor, draw_type, eta, N, T, rho, near_factor = None
                   is_save = False):
     x = list(x)
     
-    title = get_title_1(ord, cov_cor, draw_type, eta, N, T, rho, near_factor)
+    title = get_title_1(ord, cov_cor, eta, N, T, rho, draw_type, near_factor)
     data_path = 'data/' + title + '.txt'
     fig_path = 'data/' + title + '.png'
     print(data_path)
