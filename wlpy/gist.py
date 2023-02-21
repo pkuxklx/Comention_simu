@@ -4,16 +4,16 @@ import numpy as np
 # %% Matrix Plots
 
 
-def heatmap(S, title='Matrix_S', path=None):
+def heatmap(S, title = 'Matrix_S', path = None, cmap = 'inferno'):
     """
     Plot the heatmap of a matrix S
     """
     from datetime import datetime
     timestr = datetime.now().strftime('%Y%m%d%H')
     fig = plt.figure()
-    cax = fig.add_subplot(111).matshow(S, cmap='inferno')
+    cax = fig.add_subplot(111).matshow(S, cmap = cmap)
     fig.colorbar(cax)
-    plt.figtext(0.5, 0.01, 'Heatmap of' + '-'.join(title.split()),  wrap=True,
+    plt.figtext(0.5, 0.01, 'Heatmap of ' + '-'.join(title.split()),  wrap=True,
                 horizontalalignment='center', fontsize=10)
     if path != None:
         fig.savefig(path + 'Heatmap-' + title + '-' +
