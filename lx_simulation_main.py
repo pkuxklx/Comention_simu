@@ -33,6 +33,11 @@ for rho in [0.5, 0.8, 0.95, 0.99]:
                                 
                 for ord in ['fro', 2]:
                     for eta in [0.5, 0.8, 0.95, 1]:
+                        nowParam = MyParamsIter(rho, N, T, ord, eta)
+                        lastParam = MyParamsIter(0.5, 500, 100, 2, 0.5)
+                        if nowParam <= lastParam:
+                            continue
+
                         err_cor = []
                         err_cov = []
                         # err_lwg = []

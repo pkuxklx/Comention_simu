@@ -206,3 +206,26 @@ def gen_aux_set(cov, prob, qrob, observe_level):
 
     aux_set = GP + GQ
     return aux_set
+
+# %%
+
+# %%
+class MyParamsIter:
+    def __init__(self, *args):
+        self.ls = args
+    
+    def __lt__(self, x): # <
+        assert type(x) == MyParamsIter
+        assert len(self.ls) == len(x.ls)
+        fro_to_0 = lambda x: 0 if x == 'fro' else x
+        for v1, v2 in zip(self.ls, x.ls):
+            v1 = fro_to_0(v1)
+            v2 = fro_to_0(v2)
+            assert type(v1) != str and type(v2) != str
+            if v1 == v2:
+                continue
+            return v1 < v2
+        return False     
+
+    def __le__(self, x):
+        return self < x or self.ls == x.ls
