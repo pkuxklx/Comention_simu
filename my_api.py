@@ -3,22 +3,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random, os
 from infoband.band_info import InfoCorrBand
-
-# %%
-def cov2cor(S: np.ndarray):
-    # Covariance to Correlation
-    D = np.diag(np.sqrt(np.diag(S)))
-    D_inv = np.linalg.inv(D)
-    return D_inv @ S @ D_inv
-
-# %%
-def gen_S_AR1(rho = 0.8, N = 500) -> np.ndarray:
-    # self covariance matrix of AR(1) process
-    S_block = np.zeros(shape=[N, N])
-    for j in range(0, N):
-        S_block = S_block + np.diag(np.ones(N - j) * (rho ** j), -j) + np.diag(np.ones(N - j) * (rho ** j), j)
-    S = S_block - np.eye(N)
-    return S
+from wlpy.gist import heatmap
+import copy
+from gen_S import *
 
 # %%
 def gen_eta_sequence(N, eta = 0.5, draw_type = 'random', seed = None, near_factor = 2) -> np.ndarray:
@@ -229,3 +216,13 @@ class MyParamsIter:
 
     def __le__(self, x):
         return self < x or self.ls == x.ls
+    
+
+# %%
+if __name__ == '__main__':
+    S = gen_S_AR1(0.99, 100, 10)
+    # print(S)
+    heatmap(S)
+    S1 = gen_S_AR1(0.99, 100)
+    heatmap(S1)
+# %%
