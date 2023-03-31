@@ -13,9 +13,10 @@ def gen_S(rho = 0.99,num_blocks = 1, each_block_size= 200):
     S = S_block - np.eye(N)
     return S
 
-def func_G(R, prob, qrob, observe_level):
-    P = np.random.binomial(1, prob, size= R.shape)
-    Q = np.random.binomial(1, qrob, size=R.shape)
+def func_G(R, prob, qrob, observe_level, seed = None):
+    rng = np.random.default_rng(seed)
+    P = rng.binomial(1, prob, size = R.shape)
+    Q = rng.binomial(1, qrob, size = R.shape)
 
     GP = np.where((R > observe_level) & (P == 1), 1, 0)
     GQ = np.where((R <= observe_level) & (Q == 1), 1, 0)
