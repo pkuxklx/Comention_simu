@@ -95,7 +95,6 @@ def gen_S_Bernoulli(N: int, a: float = 1, aB: float = 0.9, probB: float = 0.05, 
     Returns:
         numpy.ndarray:
     """
-    # TODO
     rng = np.random.RandomState(seed) if seed else np.random
 
     Bu = np.triu(rng.binomial(n = 1, p = probB, size = (N, N)), k = 1) * aB
@@ -110,7 +109,7 @@ def gen_S_Bernoulli(N: int, a: float = 1, aB: float = 0.9, probB: float = 0.05, 
 
 if __name__ == '__main__':
     S = gen_S_Bernoulli(100)
-    print(S)
+    # print(S)
     heatmap(S)
 
 # %%
@@ -129,6 +128,6 @@ def gen_S_Cai2011Adaptive_Model2_my(N, a1 = 1, a1B = 0.9, probB = 0.05, a2 = 4, 
     return S
 
 if __name__ == '__main__':
-    S = gen_S_Cai2011Adaptive_Model2_my(100)
+    S = gen_S_Cai2011Adaptive_Model2_my(500)
     heatmap(S)
 # %%

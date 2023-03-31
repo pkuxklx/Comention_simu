@@ -88,6 +88,11 @@ for max_mass in [0.3, 0.5, 0.8, 0.99]:
                                 
                 for ord in ['fro', 2]:
                     for eta in [0.5, 0.8, 0.95, 1]:
+                        nowParam = MyParamsIter(max_mass, N, T, ord, eta)
+                        lastParam = MyParamsIter(0.3, 300, 300, 'fro', 0.95)
+                        if nowParam <= lastParam:
+                            continue
+                        
                         err_cor = []
                         err_cov = []
                         # err_lwg = []
