@@ -40,16 +40,14 @@ for N in [100, 300, 500]:
             print(N, T)
             for ord in ['fro', 2]:
                 for tau in [0.2]:
-                    for prob in [0.9, 0.99]:
-                        for qrob in [0.01, 0.1]:
-                            nowParam = MyParamsIter(N, T, ord, tau, prob, qrob)
+                    for prob in [0.9, 0.99, 1]:
+                        for qrob in [0, 0.01, 0.1]:
+                            # nowParam = MyParamsIter(N, T, ord, tau, prob, qrob)
                             # lastParam = MyParamsIter(0.5, 500, 100, 2, 0.5)
                             # if nowParam <= lastParam:
                             #     continue
-
-                            if nowParam > MyParamsIter(100, 300, 'fro', 0.2, 0.99, 0.01):
-                                break
-                            
+                            if not (prob == 1 and qrob == 0):
+                                continue
 
                             err_cor = []
                             err_cov = []            
@@ -69,7 +67,7 @@ for N in [100, 300, 500]:
                                 S_est = m.fit(param_threshold)
                                 R_est = cov2cor(S_est)
 
-                                print(i)
+                                print(i, end = ' ')
                                 # heatmap(S_est, cmap = cmap)
                                 # profiler.stop()
                                 # profiler.print()
