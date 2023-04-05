@@ -2,8 +2,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
 # %% Matrix Plots
-
-
 def heatmap(S, title = 'Matrix_S', path = None, cmap = 'inferno'):
     """
     Plot the heatmap of a matrix S
@@ -20,7 +18,11 @@ def heatmap(S, title = 'Matrix_S', path = None, cmap = 'inferno'):
                     timestr + '.eps', format='eps')
     fig.show()
 
-
+if __name__ == '__main__':
+    S = np.random.default_rng(1).exponential(scale = 1, size = (100, 100))
+    S = S.clip(min = 0, max = 20)
+    heatmap(S, cmap = 'gist_gray_r')
+# %%
 def heatmap_dictionary(dict_matrices, shape=[1, 1], path=None, title=''):
     from datetime import datetime
     timestr = datetime.now().strftime('%Y%m%d%H')
@@ -39,7 +41,6 @@ def heatmap_dictionary(dict_matrices, shape=[1, 1], path=None, title=''):
                     timestr + '.eps', format='eps')
     plt.tight_layout()
     fig.show()
-
 
 # %% Define the function that draws a network
 

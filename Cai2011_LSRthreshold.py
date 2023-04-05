@@ -24,24 +24,32 @@ from my_api import *
 # %%
 # Cai2011Adaptive_Model1, and Model2_my ; LSRthreshold, use_correlation = False
 repetition = 100
+cv_option = 'brute'
+cmap = 'gist_gray_r'
+
 for N in [100, 300, 500]:
         simu_str = 'LSRthreshold'
         S = gen_S_Cai2011Adaptive_Model1(N = N)
         cov_str = 'Cai2011Adaptive_Model1'
         # S = gen_S_Cai2011Adaptive_Model2_my(N = N, seed = 0)
         # cov_str = 'Cai2011Adaptive_Model2_my'
-        
+        # heatmap(S, cmap = cmap)
+
         R = cov2cor(S)
         for T in [300]:
             print(N, T)
             for ord in ['fro', 2]:
                 for tau in [0.2]:
-                    for prob in [0.99, 0.9]:
+                    for prob in [0.9, 0.99]:
                         for qrob in [0.01, 0.1]:
-                            # nowParam = MyParamsIter(rho, N, T, ord, eta)
+                            nowParam = MyParamsIter(N, T, ord, tau, prob, qrob)
                             # lastParam = MyParamsIter(0.5, 500, 100, 2, 0.5)
                             # if nowParam <= lastParam:
                             #     continue
+
+                            if nowParam > MyParamsIter(100, 300, 'fro', 0.2, 0.99, 0.01):
+                                break
+                            
 
                             err_cor = []
                             err_cov = []            
@@ -57,11 +65,12 @@ for N in [100, 300, 500]:
                                 hatL = func_G(S, prob, qrob, observe_level = tau, seed = i) # binary auxiliary set
 
                                 m = NetBanding(X, G = hatL, use_correlation = False)
-                                param_threshold = m.params_by_cv('pd')
+                                param_threshold = m.params_by_cv(cv_option = cv_option)
                                 S_est = m.fit(param_threshold)
                                 R_est = cov2cor(S_est)
-                            
+
                                 print(i)
+                                # heatmap(S_est, cmap = cmap)
                                 # profiler.stop()
                                 # profiler.print()
                                 
@@ -71,11 +80,11 @@ for N in [100, 300, 500]:
                             err_cor = err_cor / LA.norm(R, ord)
                             err_cov = err_cov / LA.norm(S, ord)
                             
-                            simu_params = [tau, prob, qrob]
+                            simu_params = [tau, prob, qrob, cv_option]
                             save_data_fig(err_cor, ord, 'R', N, T, 
-                                            cov_dscrb = [cov_str], simu_dscrb = [simu_str, *simu_params], is_save = 1)
+                                            cov_dscrb = [cov_str], simu_dscrb = [simu_str, *simu_params, 'brute'], is_save = 1)
                             save_data_fig(err_cov, ord, 'S', N, T, 
-                                            cov_dscrb = [cov_str], simu_dscrb = [simu_str, *simu_params], is_save = 1)
+                                            cov_dscrb = [cov_str], simu_dscrb = [simu_str, *simu_params, 'brute'], is_save = 1)
 
 # %%
 
