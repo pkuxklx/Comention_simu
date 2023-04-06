@@ -327,7 +327,7 @@ class RetDF(DFManipulation):
 
 
 class NetBanding(Covariance):
-    def __init__(self, X: np.array, G: np.array, N: int = None, T: int = None, threshold_method='soft threshold', cv_bound=0, use_correlation= True,  **kwargs):
+    def __init__(self, X: np.array, G: np.array, N: int = None, T: int = None, threshold_method='soft threshold', cv_bound=0, use_correlation= True, num_cv = 10, **kwargs):
         """
         Assume we observe N individuals over T periods, we want to use Network G guided banding method to obtain an N*N estimate of the assumed sparse covariance. 
         """
@@ -341,6 +341,7 @@ class NetBanding(Covariance):
         self.threshold_method = threshold_method
         self.scaling_factor = np.sqrt(np.log(self.N) / self.T)
         self.use_correlation = use_correlation
+        self.num_cv = num_cv
         
         self.sample_std_diagonal= np.diag(np.diag(self.sample_cov()))**0.5
         self.R = np.corrcoef(np.array(self.X), rowvar= False)
@@ -372,9 +373,9 @@ class NetBanding(Covariance):
     
     def loss_func(self, params):
         from sklearn.model_selection import train_test_split
-        # V = self.num_cv
+        V = self.num_cv
         test_size = int(np.floor(self.T * 0.4))
-        V= 4
+        # V = 4
         score = np.zeros(V)
   
         for v in range(V):

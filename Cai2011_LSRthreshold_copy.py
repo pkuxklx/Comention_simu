@@ -31,10 +31,10 @@ folder = 'data_LSRthreshold_cv50'
 
 for N in [100, 300, 500]:
         simu_str = 'LSRthreshold'
-        S = gen_S_Cai2011Adaptive_Model1(N = N)
-        cov_str = 'Cai2011Adaptive_Model1'
-        # S = gen_S_Cai2011Adaptive_Model2_my(N = N, seed = 0)
-        # cov_str = 'Cai2011Adaptive_Model2_my'
+        # S = gen_S_Cai2011Adaptive_Model1(N = N)
+        # cov_str = 'Cai2011Adaptive_Model1'
+        S = gen_S_Cai2011Adaptive_Model2_my(N = N, seed = 0)
+        cov_str = 'Cai2011Adaptive_Model2_my'
         # heatmap(S, cmap = cmap)
 
         R = cov2cor(S)

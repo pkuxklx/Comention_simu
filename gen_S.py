@@ -101,7 +101,7 @@ def gen_S_Bernoulli(N: int, a: float = 1, aB: float = 0.9, probB: float = 0.05, 
     B = Bu + Bu.T + np.eye(N) * a
     eigvals, _ = np.linalg.eig(B)
     assert np.isrealobj(eigvals), "Not all B's eigenvalues are real numbers."
-    print(sorted(eigvals))
+    # print(sorted(eigvals))
 
     eps = max(0, - min(eigvals)) + 0.01
     S = B + eps * np.eye(N)
