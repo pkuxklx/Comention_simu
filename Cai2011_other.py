@@ -32,13 +32,17 @@ class Other_Methods():
         T, N = X.shape
         G_zero = np.ones((N, N)) - np.eye(N)
         m = AdptCorrThreshold(pd.DataFrame(X), G_zero)
+
+
         if name == 'Sample':
             S_est = m.sample_cov()
             R_est = cov2cor(S_est)
-        elif name == 'Soft Threshold':
-            R_est, S_est, _ = m.auto_fit(threshold_method = 'soft threshold')
-        elif name == 'Hard Threshold':
-            R_est, S_est, _ = m.auto_fit(threshold_method = 'hard threshold')
+        elif name == 'Soft Threshold' or name == 'Hard Threshold':
+            nb = NetBanding(X, G = np.zeros((N, N)), use_correlation = False, num_cv = 50, threshold_method = name.lower())
+            tau = nb.params_by_cv(cv_option = 'brute')
+            S_est = nb.fit(tau)
+            R_est = cov2cor(S_est)
+        
         elif name == 'Linear Shrink':
             S_est = m.lw_lin_shrink()
             R_est = cov2cor(S_est)
@@ -63,9 +67,11 @@ for N in [100, 300, 500]:
         print(N, T)
         for ord in ['fro', 2]:
             for j, method_name in enumerate(om.names):
-                nowParam = MyParamsIter(N, T, ord, j)
-                lastParam = MyParamsIter(300, 300, 'fro', 3)
-                if nowParam <= lastParam:
+                # nowParam = MyParamsIter(N, T, ord, j)
+                # lastParam = MyParamsIter(300, 300, 'fro', 3)
+                # if nowParam <= lastParam:
+                #     continue
+                if method_name != 'Soft Threshold':
                     continue
 
                 if method_name == 'Nonlinear Shrink' and N >= T:
