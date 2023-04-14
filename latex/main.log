@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/W32TeX) (preloaded format=pdflatex 2020.7.15)  6 APR 2023 12:43
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/W32TeX) (preloaded format=pdflatex 2020.7.15)  8 APR 2023 23:54
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -432,21 +432,6 @@ Underfull \hbox (badness 10000) in paragraph at lines 18--18
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 18--18
-[]\OT1/cmr/m/n/10 Augmented
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 18--18
-\OT1/cmr/m/n/10 Thresh-old
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 18--18
-\OT1/cmr/m/n/10 0\OML/cmm/m/it/10 :\OT1/cmr/m/n/10 99\OML/cmm/m/it/10 ; q \OT1/cmr/m/n/10 =
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 18--18
 []\OT1/cmr/m/n/10 Hard
  []
 
@@ -514,21 +499,6 @@ Underfull \hbox (badness 10000) in paragraph at lines 18--18
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 18--18
-[]\OT1/cmr/m/n/10 Augmented
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 18--18
-\OT1/cmr/m/n/10 Thresh-old
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 18--18
-\OT1/cmr/m/n/10 0\OML/cmm/m/it/10 :\OT1/cmr/m/n/10 99\OML/cmm/m/it/10 ; q \OT1/cmr/m/n/10 =
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 18--18
 []\OT1/cmr/m/n/10 Hard
  []
 
@@ -568,13 +538,13 @@ Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 37.
 Here is how much of TeX's memory you used:
  7082 strings out of 480608
  106075 string characters out of 5907536
- 411540 words of memory out of 5000000
+ 409540 words of memory out of 5000000
  22847 multiletter control sequences out of 15000+600000
  533399 words of font info for 28 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 34i,12n,29p,380b,329s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 34i,12n,29p,330b,329s stack positions out of 5000i,500n,10000p,200000b,80000s
 <d:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb><d:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><d:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb><d:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb><d:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb>
-Output written on d:/BaiduSyncdisk/Project/Co_simu_3/latex/main.pdf (1 page, 55409 bytes).
+Output written on d:/BaiduSyncdisk/Project/Co_simu_3/latex/main.pdf (1 page, 55318 bytes).
 PDF statistics:
  35 PDF objects out of 1000 (max. 8388607)
  26 compressed objects within 1 object stream
