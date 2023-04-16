@@ -1,6 +1,6 @@
 import numpy as np
 import scipy.linalg as LA 
-from utils.covest import NetBanding
+# from utils.covest import NetBanding
 import pandas as pd
 
 def gen_S(rho = 0.99,num_blocks = 1, each_block_size= 200):
@@ -17,7 +17,10 @@ def func_G(R, prob, qrob, observe_level, seed = None):
     rng = np.random.default_rng(seed)
     P = rng.binomial(1, prob, size = R.shape)
     Q = rng.binomial(1, qrob, size = R.shape)
+    P = np.triu(P) + np.triu(P, 1).T
+    Q = np.triu(Q) + np.triu(Q, 1).T
 
+    R = np.abs(R)
     GP = np.where((R > observe_level) & (P == 1), 1, 0)
     GQ = np.where((R <= observe_level) & (Q == 1), 1, 0)
 
