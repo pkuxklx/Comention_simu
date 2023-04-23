@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/W32TeX) (preloaded format=pdflatex 2020.7.15)  8 APR 2023 23:54
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/W32TeX) (preloaded format=pdflatex 2020.7.15)  23 APR 2023 21:43
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -378,74 +378,7 @@ LaTeX Info: Redefining \nameref on input line 24.
 \@outlinefile=\write3
 \openout3 = `main.out'.
 
- (d:/BaiduSyncdisk/Project/Co_simu_3/latex/Cai2011Adaptive_Model1_processed.tex
-d:/BaiduSyncdisk/Project/Co_simu_3/latex/Cai2011Adaptive_Model1_processed.tex:3: Missing $ inserted.
-<inserted text> 
-                $
-l.3 \caption{Cai2011Adaptive_Model1}
-                                    
-I've inserted a begin-math/end-math symbol since I think
-you left one out. Proceed, with fingers crossed.
-
-d:/BaiduSyncdisk/Project/Co_simu_3/latex/Cai2011Adaptive_Model1_processed.tex:3: Missing $ inserted.
-<inserted text> 
-                $
-l.3 \caption{Cai2011Adaptive_Model1}
-                                    
-I've inserted a begin-math/end-math symbol since I think
-you left one out. Proceed, with fingers crossed.
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 18--18
-[]\OT1/cmr/m/n/10 Augmented
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 18--18
-\OT1/cmr/m/n/10 Band
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 18--18
-[]\OT1/cmr/m/n/10 Augmented
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 18--18
-\OT1/cmr/m/n/10 Band
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 18--18
-[]\OT1/cmr/m/n/10 Augmented
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 18--18
-[]\OT1/cmr/m/n/10 Augmented
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 18--18
-\OT1/cmr/m/n/10 Thresh-old
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 18--18
-[]\OT1/cmr/m/n/10 Hard
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 18--18
-[]\OT1/cmr/m/n/10 Linear
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 18--18
-[]\OT1/cmr/m/n/10 Nonlinear
- []
-
-) (d:/BaiduSyncdisk/Project/Co_simu_3/latex/Cai2011Adaptive_Model2_my_processed.tex
+ (d:/BaiduSyncdisk/Project/Co_simu_3/latex/Cai2011Adaptive_Model2_my_processed.tex
 d:/BaiduSyncdisk/Project/Co_simu_3/latex/Cai2011Adaptive_Model2_my_processed.tex:3: Missing $ inserted.
 <inserted text> 
                 $
@@ -513,14 +446,14 @@ Underfull \hbox (badness 10000) in paragraph at lines 18--18
  []
 
 )
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 37.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 38.
  [1
 
 {d:/texlive/2020/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 37.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 38.
  (d:/BaiduSyncdisk/Project/Co_simu_3/latex/main.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 37.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 37.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 38.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 38.
 
 
 Package rerunfilecheck Warning: File `main.out' has changed.
@@ -533,21 +466,21 @@ Package rerunfilecheck Info: Checksums for `main.out':
 
 LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 37.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 38.
  ) 
 Here is how much of TeX's memory you used:
- 7082 strings out of 480608
- 106075 string characters out of 5907536
- 409540 words of memory out of 5000000
- 22847 multiletter control sequences out of 15000+600000
+ 7077 strings out of 480608
+ 105846 string characters out of 5907536
+ 401540 words of memory out of 5000000
+ 22846 multiletter control sequences out of 15000+600000
  533399 words of font info for 28 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  34i,12n,29p,330b,329s stack positions out of 5000i,500n,10000p,200000b,80000s
 <d:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb><d:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><d:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb><d:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb><d:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb>
-Output written on d:/BaiduSyncdisk/Project/Co_simu_3/latex/main.pdf (1 page, 55318 bytes).
+Output written on d:/BaiduSyncdisk/Project/Co_simu_3/latex/main.pdf (1 page, 54772 bytes).
 PDF statistics:
- 35 PDF objects out of 1000 (max. 8388607)
- 26 compressed objects within 1 object stream
- 4 named destinations out of 1000 (max. 500000)
+ 34 PDF objects out of 1000 (max. 8388607)
+ 25 compressed objects within 1 object stream
+ 3 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 

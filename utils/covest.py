@@ -414,4 +414,90 @@ class NetBanding(Covariance):
         
 
 # %%
+class ANDNetBanding(Covariance):
+    def __init__(self, X: np.array, G: np.array, N: int = None, T: int = None, threshold_method='soft threshold', cv_bound=0, use_correlation= True, num_cv = 10, **kwargs):
+        """
+        Assume we observe N individuals over T periods, we want to use Network G guided banding method to obtain an N*N estimate of the assumed sparse covariance. 
+        """
+        super().__init__(X)
+        self.X = X
+        self.G = G
+        if N == None and T ==None:
+            T,N = X.shape
+        self.N = N 
+        self.T = T
+        self.threshold_method = threshold_method
+        self.scaling_factor = np.sqrt(np.log(self.N) / self.T)
+        self.use_correlation = use_correlation
+        self.num_cv = num_cv
+        
+        self.sample_std_diagonal= np.diag(np.diag(self.sample_cov()))**0.5
+        self.R = np.corrcoef(np.array(self.X), rowvar= False)
 
+        
+    def fit(self, params, option = None):
+        if self.use_correlation:
+            M = self.R
+            # print("correlation!!!")
+        else:
+            M = self.S_sample
+            
+        if option == "universal":
+            G = np.zeros([self.N, self.N])
+        else:
+            G = self.G
+        M1 = np.where(G==1, M, 0)
+        M0 = np.where(G ==0 , M, 0)
+        Tau = params * np.ones([self.N, self.N]) * self.scaling_factor
+        # M0T = generalized_threshold(M0, Tau, self.threshold_method)
+        # M_new = M1 + M0T
+        M1T = generalized_threshold(M1, Tau, self.threshold_method)
+        M_new = M1T
+        if self.use_correlation:
+            M_new = M_new - np.diag(np.diag(M_new)) + np.eye(self.N)
+            self.Rt = M_new
+            S_new = self.sample_std_diagonal @ M_new @ self.sample_std_diagonal
+        else:
+            S_new = M_new
+        return S_new
+    
+    def loss_func(self, params):
+        from sklearn.model_selection import train_test_split
+        V = self.num_cv
+        test_size = int(np.floor(self.T * 0.4))
+        # V = 4
+        score = np.zeros(V)
+  
+        for v in range(V):
+            A, B = train_test_split(self.X, test_size= test_size)
+            S_train = NetBanding(A, self.G, self.N, self.T).fit(params)
+            S_validation = np.cov(np.array(B), rowvar= False)
+            score[v] = LA.norm(S_train - S_validation)**2
+        average_score = score.mean()
+        
+        return average_score
+    
+    def params_by_cv(self, cv_option = "brute", cv_bound = 0, **kwargs):
+        """
+        Find the optimal parameters from cross-validation method\n
+
+        options:\n
+        \t - "brute" : naive brute force\n
+        \t - "pd": minimization with range constraints determined to guarantee pd
+        """
+
+        from scipy import optimize
+        if cv_option == "brute":
+            result = optimize.brute(
+                self.loss_func, (slice(0, 1.0, 0.1),))
+        elif cv_option == "pd":
+            scaling_factor = self.scaling_factor
+            lb = cv_bound/ scaling_factor
+            ub = 1/ scaling_factor
+            x0 = np.array([0])
+            result = optimize.minimize(
+                self.loss_func, x0, method="trust-constr", bounds=((lb, ub),), options={"verbose": 0}).x
+        else: 
+            result = None
+            print("No result, check arguments")
+        return result

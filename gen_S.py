@@ -1,6 +1,7 @@
 # %%
 import numpy as np
 import copy
+import matplotlib.pyplot as plt
 from wlpy.gist import heatmap
 
 # %%
@@ -138,8 +139,9 @@ def gen_S_arrow(N, n1 = 5, rho = 0.9, c = 0.3, a1 = 4, a2 = 0):
     S = S.astype(np.float64)
     return S
 if __name__ == '__main__':
-    S = gen_S_arrow(100)
-    heatmap(S)
+    S = gen_S_arrow(100, n1 = 5)
+    heatmap(S);
+    heatmap(S.clip(0, 0.3));
 # %%
 for rho in [0.9, 0.5]:
     S = gen_S_arrow(500, rho = rho)
