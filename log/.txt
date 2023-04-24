@@ -1,8 +1,11 @@
-2023/4/25 0：25
-# Model2_my的数据有问题，全部重跑
+/2023/4/25 0：25
 # 新方法thG
 # repetition都是20
 # 都存在data文件夹
 code_arrow/arrow_thG.py
-code_Cai2011/*_copy.py 
 code_Cai2011/Cai2011_thG.py
+
+
+可能的下一步计划
+# Model2_my的数据有问题，全部重跑
+code_Cai2011/*_copy.py 
