@@ -21,7 +21,7 @@ def gen_eta_sequence(N, eta = 0.5, draw_type = 'random', seed = None, near_facto
     Returns:
     """
         
-    rng = np.random.RandomState(seed) if seed else np.random
+    rng = np.random.default_rng(seed)
         
     b = [1] # Default to keep the diagonal element in covariance estimation.
     b_complement = [i for i in range(2, N + 1)] # b's complement set
@@ -134,7 +134,7 @@ def save_data_fig(x,
 
 # %%
 def gen_mass(N, dof = 5, max_mass = 0.5, seed = None):
-    rng = np.random.RandomState(seed) if seed else np.random
+    rng = np.random.default_rng(seed)
     mass = rng.noncentral_chisquare(dof, False, size = N)
     # mass = rng.exponential(1, size = N)
     # mass = rng.uniform(0, 1, size = N)
@@ -157,7 +157,7 @@ def gen_S_gravity(N, dof = 5, max_mass = 0.5,
     Returns:
         a N by N covariance matrix
     """
-    rng = np.random.RandomState(seed) if seed else np.random
+    rng = np.random.default_rng(seed)
     
     mass = gen_mass(N, dof, max_mass, seed)
     prob_of_link = np.array([[x * y for x in mass] for y in mass])
@@ -185,6 +185,8 @@ def gen_S_gravity(N, dof = 5, max_mass = 0.5,
     return S
 # %%
 def gen_aux_set(cov, prob, qrob, observe_level):
+    '''Deprecated. Use <utils.simulation.func_G>.
+    '''
     P = np.random.binomial(1, prob, size = cov.shape)
     Q = np.random.binomial(1, qrob, size = cov.shape)
 

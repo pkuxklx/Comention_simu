@@ -335,7 +335,7 @@ class NetBanding(Covariance):
         self.X = X
         self.G = G
         if N == None and T ==None:
-            T,N = X.shape
+            T, N = X.shape
         self.N = N 
         self.T = T
         self.threshold_method = threshold_method
