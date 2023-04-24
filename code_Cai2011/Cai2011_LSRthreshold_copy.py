@@ -1,9 +1,12 @@
 # %%
+import sys, os
+os.chdir('..')
+sys.path.append(os.getcwd())
+# %%
 import numpy as np
 from sklearn.datasets import make_sparse_spd_matrix
 from scipy import linalg as LA
 import pandas as pd
-import time, os
 import matplotlib.pyplot as plt
 
 # from pyinstrument import Profiler
@@ -20,17 +23,17 @@ warnings.filterwarnings("ignore")
 from my_api import *
 # %%
 # Cai2011Adaptive_Model1, and Model2_my ; LSRthreshold, use_correlation = False
-repetition = 100
+repetition = 20
 cv_option = 'brute'
 cmap = 'gist_gray_r'
-num_cv = 10
-folder = 'data_LSRthreshold_cv10'
+num_cv = 50
+folder = 'data'
 simu_str = 'LSRthreshold'
 cov_str = 'Cai2011Adaptive_Model2_my'
 
 print(simu_str, cov_str, folder)
 
-for N in [100, 300, 500]:
+for N in [300, 100, 500]:
     if cov_str == 'Cai2011Adaptive_Model1':
         S = gen_S_Cai2011Adaptive_Model1(N = N)
     elif cov_str == 'Cai2011Adaptive_Model2_my':
@@ -38,8 +41,6 @@ for N in [100, 300, 500]:
     else:
         raise Exception
     
-    # heatmap(S, cmap = cmap)
-
     R = cov2cor(S)
     for T in [300]:
         print(N, T)
@@ -50,7 +51,7 @@ for N in [100, 300, 500]:
                     for ord in ['fro', 2]:
                         # nowParam = MyParamsIter(N, T, ord)
                         # lastParam = MyParamsIter(100, 300, 'fro')
-                        # if nowParam < lastParam:
+                        # if nowParam != lastParam:
                         #     continue
 
                         # if not (prob == 1 and qrob == 0 and N == 500):
@@ -78,16 +79,6 @@ for N in [100, 300, 500]:
                             normS = LA.norm(S, ord)
                             normErr = LA.norm(S - S_est, ord)
                             print(f'{i}, param_threshold: {param_threshold[0] :.2f}, rela: {normErr / normS :.2f}, abs: {normErr :.2f}', end = '\n')
-                            # no_diag = lambda S: S - np.diag(np.diag(S))
-                            # S_ = np.where(no_diag(S) == 0.9, 0, no_diag(m.sample_cov()))
-                            # val = np.max(np.abs(S_))
-                            # print(f'sample value with true value 0: {val}')
-                            # if param_threshold[0] < val:
-                                # raise Warning('threshold too small')
-
-                            # heatmap(S_est, cmap = cmap)
-                            # profiler.stop()
-                            # profiler.print()
                             
                             err_cor.append(LA.norm(R - R_est, ord))
                             err_cov.append(LA.norm(S - S_est, ord))

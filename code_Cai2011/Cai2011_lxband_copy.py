@@ -28,7 +28,7 @@ cv_option = 'fast_iter'
 num_cv = 50
 folder = 'data'
 simu_str = 'lx_band'
-cov_str = 'Cai2011Adaptive_Model1'
+cov_str = 'Cai2011Adaptive_Model2_my'
 
 print(simu_str, cov_str, folder)
 

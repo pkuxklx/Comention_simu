@@ -1,4 +1,8 @@
 # %%
+import sys, os
+os.chdir('..')
+sys.path.append(os.getcwd())
+# %%
 import numpy as np
 from sklearn.datasets import make_sparse_spd_matrix
 from scipy import linalg as LA
@@ -20,16 +24,19 @@ warnings.filterwarnings("ignore")
 from my_api import *
 # %%
 # Cai2011Adaptive, other methods
-repetition = 100
 from other_methods import Other_Methods
 om = Other_Methods() 
-folder = 'data_other_threshold'
+repetition = 20
+folder = 'data'
+cov_str = 'Cai2011Adaptive_Model2_my'
 
 for N in [100, 300, 500]:
-    # S = gen_S_Cai2011Adaptive_Model1(N = N)
-    # cov_str = 'Cai2011Adaptive_Model1'
-    S = gen_S_Cai2011Adaptive_Model2_my(N = N, seed = 0)
-    cov_str = 'Cai2011Adaptive_Model2_my'
+    if cov_str == 'Cai2011Adaptive_Model1':
+        S = gen_S_Cai2011Adaptive_Model1(N = N)
+    elif cov_str == 'Cai2011Adaptive_Model2_my':
+        S = gen_S_Cai2011Adaptive_Model2_my(N = N, seed = 0)
+    else:
+        raise Exception
     
     R = cov2cor(S)
     for T in [300]:

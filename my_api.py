@@ -213,10 +213,15 @@ class MyParamsIter:
                 continue
             return v1 < v2
         return False     
-
-    def __le__(self, x):
-        return self < x or self.ls == x.ls
     
+    def __eq__(self, x):  
+        return self.ls == x.ls
+    
+    def __le__(self, x):
+        return self < x or self == x
+    
+    def __ne__(self, x):
+        return not (self == x)
 
 # %%
 if __name__ == '__main__':
