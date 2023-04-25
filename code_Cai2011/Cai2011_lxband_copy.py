@@ -23,10 +23,10 @@ warnings.filterwarnings("ignore")
 from my_api import *
 # %%
 # Cai2011Adaptive_Model1, myband
-repetition = 20
+repetition = 50
 cv_option = 'fast_iter'
 num_cv = 50
-folder = 'data'
+folder = 'data_Cai2'
 simu_str = 'lx_band'
 cov_str = 'Cai2011Adaptive_Model2_my'
 

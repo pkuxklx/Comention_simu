@@ -26,8 +26,8 @@ from my_api import *
 # Cai2011Adaptive, other methods
 from other_methods import Other_Methods
 om = Other_Methods() 
-repetition = 20
-folder = 'data'
+repetition = 50
+folder = 'data_Cai2'
 cov_str = 'Cai2011Adaptive_Model2_my'
 
 for N in [100, 300, 500]:

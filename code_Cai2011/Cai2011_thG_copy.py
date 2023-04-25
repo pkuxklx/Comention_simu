@@ -24,11 +24,11 @@ warnings.filterwarnings("ignore")
 from my_api import *
 # %%
 # Cai2011Adaptive_Model1, and Model2_my ; LSRthreshold, use_correlation = False
-repetition = 20
+repetition = 50
 cv_option = 'brute'
 cmap = 'gist_gray_r'
 num_cv = 50
-folder = 'data'
+folder = 'data_Cai2'
 simu_str = 'thG'
 cov_str = 'Cai2011Adaptive_Model2_my'
 
