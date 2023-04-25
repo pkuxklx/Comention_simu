@@ -31,6 +31,9 @@ def gen_eta_sequence(N, eta = 0.5, draw_type = 'random', seed = None, near_facto
         th = int(np.ceil(eta * k))
         # S^L_k include S^d_{th}
         cnt = sum([1 if num <= th else 0 for num in b])
+
+        assert len(b_complement) == N + 1 - k
+        
         if cnt < th:
             for next_id in range(1, th + 1):
                 if next_id not in b:
@@ -38,12 +41,11 @@ def gen_eta_sequence(N, eta = 0.5, draw_type = 'random', seed = None, near_facto
                     b_complement.remove(next_id)
                     break
         else:
-            # len(b_complement) == N + 1 - k
             if draw_type == 'random':
-                j = rng.randint(0, N - k) if N - k > 0 else 0
+                j = rng.integers(0, N - k) if N - k > 0 else 0
             elif draw_type == 'near':
                 upper = min(int(near_factor * k), N - k)
-                j = rng.randint(0, upper) if upper > 0 else 0
+                j = rng.integers(0, upper) if upper > 0 else 0
             else:
                 raise Exception('draw_type, value error')
             next_id = b_complement[j] 
