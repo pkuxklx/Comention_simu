@@ -334,6 +334,7 @@ class NetBanding(Covariance):
         super().__init__(X)
         self.X = X
         self.G = G
+        assert ((G == 1) == G).all() # G only have values 0 and 1.
         if N == None and T ==None:
             T, N = X.shape
         self.N = N 
@@ -381,8 +382,11 @@ class NetBanding(Covariance):
         for v in range(V):
             A, B = train_test_split(self.X, test_size= test_size)
             S_train = NetBanding(A, self.G, self.N, self.T).fit(params)
-            S_validation = np.cov(np.array(B), rowvar= False)
-            score[v] = LA.norm(S_train - S_validation)**2
+            S_validation = np.cov(np.array(B), rowvar = False)
+            #  Hadamard product with (1 - G). Make the threshold param more robust.
+            S_train = S_train * (1 - self.G)
+            S_validation = S_validation * (1 - self.G)
+            score[v] = LA.norm(S_train - S_validation) ** 2
         average_score = score.mean()
         
         return average_score
@@ -414,6 +418,7 @@ class NetBanding(Covariance):
         
 
 # %%
+''' have not maken the change: * (1 - self.G)
 class ANDNetBanding(Covariance):
     def __init__(self, X: np.array, G: np.array, N: int = None, T: int = None, threshold_method='soft threshold', cv_bound=0, use_correlation= True, num_cv = 10, **kwargs):
         """
@@ -501,3 +506,4 @@ class ANDNetBanding(Covariance):
             result = None
             print("No result, check arguments")
         return result
+'''
