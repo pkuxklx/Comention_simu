@@ -359,8 +359,8 @@ class NetBanding(Covariance):
             G = np.zeros([self.N, self.N])
         else:
             G = self.G
-        M1 = np.where(G==1, M, 0)
-        M0 = np.where(G ==0 , M, 0)
+        M1 = np.where(G == 1, M, 0)
+        M0 = np.where(G == 0, M, 0)
         Tau = params * np.ones([self.N, self.N]) * self.scaling_factor
         M0T = generalized_threshold(M0, Tau, self.threshold_method)
         M_new = M1 + M0T

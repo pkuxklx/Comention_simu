@@ -27,7 +27,7 @@ repetition = 100
 cv_option = 'brute'
 cmap = 'gist_gray_r'
 num_cv = 50
-folder = 'data_arrow'
+folder = 'data_newLSR_arrow_Cai1'
 simu_str = 'LSRthreshold'
 cov_str = 'arrow'
 
