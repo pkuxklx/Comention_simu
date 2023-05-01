@@ -380,7 +380,7 @@ class NetBanding(Covariance):
         score = np.zeros(V)
   
         for v in range(V):
-            A, B = train_test_split(self.X, test_size= test_size)
+            A, B = train_test_split(self.X, test_size = test_size, random_state = v)
             S_train = NetBanding(A, self.G, self.N, self.T).fit(params)
             S_validation = np.cov(np.array(B), rowvar = False)
             #  Hadamard product with (1 - G). Make the threshold param more robust.

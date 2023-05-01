@@ -42,6 +42,8 @@ def gen_S_Cai2011Adaptive_Model1(N: int, t: int = 10, a1: int = 1, a2: int = 4) 
     A1 = np.zeros(shape = (Nh, Nh))
     for j in range(Nh):
         sigma = max(0, 1 - j / t) * a1
+        if sigma == 0:
+            break
         A1 = A1 + np.diag(np.ones(Nh - j) * sigma, -j) + np.diag(np.ones(Nh - j) * sigma, j)
     A1 = A1 - np.eye(Nh)
     A2 = np.eye(Nh) * a2
