@@ -7,6 +7,7 @@ import numpy as np
 from sklearn.datasets import make_sparse_spd_matrix
 from scipy import linalg as LA
 import pandas as pd
+import time, os
 import matplotlib.pyplot as plt
 
 # from pyinstrument import Profiler
@@ -22,21 +23,20 @@ warnings.filterwarnings("ignore")
 
 from my_api import *
 # %%
-# Cai2011Adaptive_Model1, myband
+# Cai2011Adaptive, other methods
+from other_methods import Other_Methods
+om = Other_Methods() 
 repetition = 20
-cv_option = 'fast_iter'
-num_cv = 50
 folder = 'data_Cai2_Bernoulli'
-simu_str = 'lx_band'
-cov_str = 'Cai2011Adaptive_Model2_my'
-
-print(simu_str, cov_str, folder)
+cov_str = 'Bernoulli'
 
 for N in [100, 300, 500]:
     if cov_str == 'Cai2011Adaptive_Model1':
         S = gen_S_Cai2011Adaptive_Model1(N = N)
     elif cov_str == 'Cai2011Adaptive_Model2_my':
         S = gen_S_Cai2011Adaptive_Model2_my(N = N, seed = 0, probB = 10 / (N // 2))
+    elif cov_str == 'Bernoulli':
+        S = gen_S_Bernoulli(N = N, seed = 0, probB = 20 / N)
     else:
         raise Exception
     
@@ -44,34 +44,44 @@ for N in [100, 300, 500]:
     for T in [300]:
         print(N, T)
         for ord in ['fro', 2]:
-            for eta in [0.1, 0.5, 0.8, 1]:
-                # nowParam = MyParamsIter(rho, N, T, ord, eta)
-                # lastParam = MyParamsIter(0.5, 500, 100, 2, 0.5)
+            for j, method_name in enumerate(om.names):
+                # nowParam = MyParamsIter(N, T, ord, j)
+                # lastParam = MyParamsIter(300, 300, 'fro', 3)
                 # if nowParam <= lastParam:
                 #     continue
+                if method_name in ['Soft Threshold', 'Hard Threshold']:
+                    continue
+
+                if method_name == 'Nonlinear Shrink' and N >= T:
+                    continue
 
                 err_cor = []
                 err_cov = []            
-                print(ord, eta)
+                print(ord, method_name)
                 
                 for i in range(repetition): 
-                    X = np.random.RandomState(seed = i).multivariate_normal(mean = np.zeros(N), cov = S, size = T)
-                    L = gen_L(S, eta, draw_type = 'random', near_factor = None, seed = i)
-                    c = InfoCorrBand(X, L, num_cv = num_cv)
-                    R_est, S_est, k = c.auto_fit(cv_option = cv_option, verbose = False)
+                    # profiler = Profiler()
+                    # profiler.start()
                     
-                    print(i, k)
+                    X = np.random.RandomState(seed = i).multivariate_normal(mean = np.zeros(N), cov = S, size = T)
+                    
+                    R_est, S_est = om.fit(method_name, X)
+
+                    print(i, end = ' ')
+                    # profiler.stop()
+                    # profiler.print()
                     
                     err_cor.append(LA.norm(R - R_est, ord))
                     err_cov.append(LA.norm(S - S_est, ord))
-        
+                    
                 err_cor = err_cor / LA.norm(R, ord)
                 err_cov = err_cov / LA.norm(S, ord)
                 
+                cov_dscrb = [cov_str]
+                simu_dscrb = [method_name]
                 save_data_fig(err_cor, ord, 'R', N, T, 
-                                cov_dscrb = [cov_str], simu_dscrb = [simu_str, eta], is_save = 1, folder = folder)
+                                cov_dscrb = cov_dscrb, simu_dscrb = simu_dscrb, is_save = 1, folder = folder)
                 save_data_fig(err_cov, ord, 'S', N, T, 
-                                cov_dscrb = [cov_str], simu_dscrb = [simu_str, eta], is_save = 1, folder = folder)
-
+                                cov_dscrb = cov_dscrb, simu_dscrb = simu_dscrb, is_save = 1, folder = folder)
 # %%
 

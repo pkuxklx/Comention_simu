@@ -23,21 +23,21 @@ warnings.filterwarnings("ignore")
 from my_api import *
 # %%
 # Cai2011Adaptive_Model1, and Model2_my ; LSRthreshold, use_correlation = False
-repetition = 50
+repetition = 20
 cv_option = 'brute'
 cmap = 'gist_gray_r'
 num_cv = 50
-folder = 'data_Cai2'
+folder = 'data_Cai2_Bernoulli'
 simu_str = 'LSRthreshold'
 cov_str = 'Cai2011Adaptive_Model2_my'
 
 print(simu_str, cov_str, folder)
 
-for N in [300, 100, 500]:
+for N in [100, 300, 500]:
     if cov_str == 'Cai2011Adaptive_Model1':
         S = gen_S_Cai2011Adaptive_Model1(N = N)
     elif cov_str == 'Cai2011Adaptive_Model2_my':
-        S = gen_S_Cai2011Adaptive_Model2_my(N = N, seed = 0)
+        S = gen_S_Cai2011Adaptive_Model2_my(N = N, seed = 0, probB = 10 / (N // 2))
     else:
         raise Exception
     
@@ -46,8 +46,11 @@ for N in [300, 100, 500]:
         print(N, T)
         
         for tau in [0.2]:
-            for prob in [1]: # [0.9, 0.99, 1]:
+            for prob in [0.5, 0.8, 1]: # [0.9, 0.99, 1]:
                 for qrob in [0]: # [0, 0.01, 0.1]:
+                    if (prob, qrob) == (1, 0):
+                        continue
+                    
                     for ord in ['fro', 2]:
                         # nowParam = MyParamsIter(N, T, ord)
                         # lastParam = MyParamsIter(100, 300, 'fro')

@@ -53,7 +53,7 @@ def gen_S_Cai2011Adaptive_Model1(N: int, t: int = 10, a1: int = 1, a2: int = 4) 
     return S
 
 if __name__ == '__main__':
-    S = gen_S_Cai2011Adaptive_Model1(500)
+    S = gen_S_Cai2011Adaptive_Model1(100)
     heatmap(S)
   
 # %%
@@ -108,9 +108,11 @@ def gen_S_Bernoulli(N: int, a: float = 1, aB: float = 0.9, probB: float = 0.05, 
     return S
 
 if __name__ == '__main__':
-    S = gen_S_Bernoulli(100)
-    # print(S)
-    heatmap(S)
+    N = 300
+    S = gen_S_Bernoulli(N, seed = 0, probB = 20 / N)
+    # heatmap(S)
+    heatmap(S.clip(0, 1))
+    print(f'Average number of non-zero elements per row: {(S != 0).sum(axis = 1).mean()}')
 
 # %%
 def gen_S_Cai2011Adaptive_Model2_my(N, a1 = 1, a1B = 0.9, probB = 0.05, a2 = 4, seed: int = None):
@@ -128,8 +130,12 @@ def gen_S_Cai2011Adaptive_Model2_my(N, a1 = 1, a1B = 0.9, probB = 0.05, a2 = 4, 
     return S
 
 if __name__ == '__main__':
-    S = gen_S_Cai2011Adaptive_Model2_my(500)
-    heatmap(S)
+    N = 300
+    S = gen_S_Cai2011Adaptive_Model2_my(N, seed = 0, probB = 10 / (N // 2))
+    # heatmap(S)
+    heatmap(S.clip(0, 1))
+    print(f'Average number of non-zero elements per row: {(S != 0).sum(axis = 1).mean()}')
+
 # %%
 def gen_S_arrow(N, n1 = 5, rho = 0.9, c = 0.3, a1 = 4, a2 = 0):
     S1 = gen_S_AR1(rho = rho, N = n1) * a1

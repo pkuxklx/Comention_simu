@@ -26,15 +26,15 @@ from my_api import *
 # Cai2011Adaptive, other methods
 from other_methods import Other_Methods
 om = Other_Methods() 
-repetition = 50
-folder = 'data_Cai2'
+repetition = 20
+folder = 'data_Cai2_Bernoulli'
 cov_str = 'Cai2011Adaptive_Model2_my'
 
 for N in [100, 300, 500]:
     if cov_str == 'Cai2011Adaptive_Model1':
         S = gen_S_Cai2011Adaptive_Model1(N = N)
     elif cov_str == 'Cai2011Adaptive_Model2_my':
-        S = gen_S_Cai2011Adaptive_Model2_my(N = N, seed = 0)
+        S = gen_S_Cai2011Adaptive_Model2_my(N = N, seed = 0, probB = 10 / (N // 2))
     else:
         raise Exception
     
@@ -47,7 +47,7 @@ for N in [100, 300, 500]:
                 # lastParam = MyParamsIter(300, 300, 'fro', 3)
                 # if nowParam <= lastParam:
                 #     continue
-                if method_name not in ['Soft Threshold', 'Hard Threshold']:
+                if method_name in ['Soft Threshold', 'Hard Threshold']:
                     continue
 
                 if method_name == 'Nonlinear Shrink' and N >= T:

@@ -47,7 +47,7 @@ for N in [100, 300, 500]:
         
         for tau in [0.2]:
             for prob in [0.5, 0.8, 1]: # [0.9, 0.99, 1]:
-                for qrob in [0]: # [0, 0.01, 0.1]:
+                for qrob in [0.1]: # [0, 0.01, 0.1]:
                     if (prob, qrob) == (1, 0):
                         continue
 

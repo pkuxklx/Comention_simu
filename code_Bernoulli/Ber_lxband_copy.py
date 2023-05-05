@@ -28,7 +28,7 @@ cv_option = 'fast_iter'
 num_cv = 50
 folder = 'data_Cai2_Bernoulli'
 simu_str = 'lx_band'
-cov_str = 'Cai2011Adaptive_Model2_my'
+cov_str = 'Bernoulli'
 
 print(simu_str, cov_str, folder)
 
@@ -37,6 +37,8 @@ for N in [100, 300, 500]:
         S = gen_S_Cai2011Adaptive_Model1(N = N)
     elif cov_str == 'Cai2011Adaptive_Model2_my':
         S = gen_S_Cai2011Adaptive_Model2_my(N = N, seed = 0, probB = 10 / (N // 2))
+    elif cov_str == 'Bernoulli':
+        S = gen_S_Bernoulli(N = N, seed = 0, probB = 20 / N)
     else:
         raise Exception
     

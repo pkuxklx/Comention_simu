@@ -1,9 +1,10 @@
 # Fdb version 3
-["pdflatex"] 1682426060 "d:/BaiduSyncdisk/Project/Co_simu_3/latex/main.tex" "d:/BaiduSyncdisk/Project/Co_simu_3/latex/main.pdf" "main" 1682426060
-  "Cai2011Adaptive_Model1_processed.tex" 1682425940 2200 eb53a496049a52d792928d6c3575912b ""
-  "arrow_processed.tex" 1682425240 2190 8f1b523103eb3fb9b8a42a1b9aea7c46 ""
-  "d:/BaiduSyncdisk/Project/Co_simu_3/latex/main.aux" 1682426060 9 a94a2480d3289e625eea47cd1b285758 ""
-  "d:/BaiduSyncdisk/Project/Co_simu_3/latex/main.tex" 1682426054 924 7e722d53b9f5cc98ae23b378b6abf132 ""
+["pdflatex"] 1683189158 "d:/BaiduSyncdisk/Project/Co_simu_3/latex/main.tex" "d:/BaiduSyncdisk/Project/Co_simu_3/latex/main.pdf" "main" 1683189158
+  "Bernoulli_processed.tex" 1683189113 1852 f3b7a622e9d33a70c50990ec68655867 ""
+  "Cai2011Adaptive_Model1_processed.tex" 1682933725 1858 c2e555dc53312fc83ed1b1355914ec5c ""
+  "Cai2011Adaptive_Model2_my_processed.tex" 1683188825 1868 d11debee3629acb87e08e11df3e49849 ""
+  "d:/BaiduSyncdisk/Project/Co_simu_3/latex/main.aux" 1683189158 9 a94a2480d3289e625eea47cd1b285758 ""
+  "d:/BaiduSyncdisk/Project/Co_simu_3/latex/main.tex" 1683189144 957 5ba46313eeb1d436638cb030a5c93e80 ""
   "d:/texlive/2020/texmf-dist/fonts/map/fontname/texfonts.map" 1594814825 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "d:/texlive/2020/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1594813978 1004 54797486969f23fa377b128694d548df ""
   "d:/texlive/2020/texmf-dist/fonts/tfm/public/cm/cmbx9.tfm" 1594814331 1328 5442e22a7072966dbaf88ca900acf3f0 ""
@@ -76,11 +77,11 @@
   "d:/texlive/2020/texmf.cnf" 1594817022 673 4ae7b2f49cee444c5343a45b5d0f169c ""
   "main.aux" 0 -1 0 "pdflatex"
   "main.out" 0 -1 0 "pdflatex"
-  "main.tex" 1682426054 924 7e722d53b9f5cc98ae23b378b6abf132 ""
+  "main.tex" 1683189144 957 5ba46313eeb1d436638cb030a5c93e80 ""
   (generated)
-  "main.aux"
-  "main.pdf"
-  "d:/BaiduSyncdisk/Project/Co_simu_3/latex/main.log"
-  "main.out"
-  "main.log"
   "d:/BaiduSyncdisk/Project/Co_simu_3/latex/main.pdf"
+  "main.pdf"
+  "main.log"
+  "main.aux"
+  "main.out"
+  "d:/BaiduSyncdisk/Project/Co_simu_3/latex/main.log"
