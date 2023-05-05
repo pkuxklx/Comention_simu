@@ -17,14 +17,16 @@ def func_G(R, prob, qrob, observe_level, seed = None):
     rng = np.random.default_rng(seed)
     P = rng.binomial(1, prob, size = R.shape)
     Q = rng.binomial(1, qrob, size = R.shape)
-    P = np.triu(P) + np.triu(P, 1).T
-    Q = np.triu(Q) + np.triu(Q, 1).T
 
     R = np.abs(R)
     GP = np.where((R > observe_level) & (P == 1), 1, 0)
     GQ = np.where((R <= observe_level) & (Q == 1), 1, 0)
 
     G = GP + GQ
+    N = R.shape[0]
+    G = np.triu(G, 1) + np.triu(G, 1).T + np.eye(N)
+    assert (G == G.T).all()
+    assert (np.diag(G) == np.ones(N)).all()
     return G
 
 def generate_sample(S, T = 200):
