@@ -54,7 +54,7 @@ def gen_S_Cai2011Adaptive_Model1(N: int, t: int = 10, a1: int = 1, a2: int = 4) 
 
 if __name__ == '__main__':
     S = gen_S_Cai2011Adaptive_Model1(100)
-    heatmap(S)
+    heatmap(S, title = 'Model 1')
   
 # %%
 def gen_S_Cai2011Adaptive_Model2(N: int, intU: tuple = (0.3, 0.8), probB: float = 0.05, a1: float = 1, a2: float = 4, seed: int = None) -> np.ndarray:
@@ -130,10 +130,10 @@ def gen_S_Cai2011Adaptive_Model2_my(N, a1 = 1, a1B = 0.9, probB = 0.05, a2 = 4, 
     return S
 
 if __name__ == '__main__':
-    N = 300
+    N = 100
     S = gen_S_Cai2011Adaptive_Model2_my(N, seed = 0, probB = 10 / (N // 2))
-    # heatmap(S)
-    heatmap(S.clip(0, 1))
+    heatmap(S, title = 'Model 2')
+    heatmap(S.clip(0, 1), title = 'Model 2 (clipped)')
     print(f'Average number of non-zero elements per row: {(S != 0).sum(axis = 1).mean()}')
 
 # %%

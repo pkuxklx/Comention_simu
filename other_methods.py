@@ -19,14 +19,15 @@ class Other_Methods():
         G_zero = np.ones((N, N)) - np.eye(N)
         m = AdptCorrThreshold(pd.DataFrame(X), G_zero)
 
-
+        R_est, S_est, params = None, None, [None]
         if name == 'Sample':
             S_est = m.sample_cov()
             R_est = cov2cor(S_est)
         elif name == 'Soft Threshold' or name == 'Hard Threshold':
-            nb = NetBanding(X, G = np.zeros((N, N)), use_correlation = False, num_cv = num_cv, threshold_method = name.lower())
-            tau = nb.params_by_cv(cv_option = 'brute')
-            S_est = nb.fit(tau)
+            nb = NetBanding(X, G = np.zeros((N, N)), use_correlation = False, num_cv = num_cv, threshold_method = name.lower()) 
+            # For Soft and Hard Thresholding, diagonal elements are shrunk.
+            params = nb.params_by_cv(cv_option = 'brute') # th = params[0]
+            S_est = nb.fit(params)
             R_est = cov2cor(S_est)
         
         elif name == 'Linear Shrink':
@@ -36,4 +37,4 @@ class Other_Methods():
             assert T > N, f"Nonlinear shrink method is not applicable with T={T} > N={N}."
             S_est = m.nonlin_shrink()
             R_est = cov2cor(S_est)
-        return R_est, S_est
+        return R_est, S_est, params
