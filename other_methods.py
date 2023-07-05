@@ -3,6 +3,7 @@ import numpy as np, pandas as pd
 from utils.adpt_correlation_threshold import AdptCorrThreshold
 from utils.covest import NetBanding
 from my_api import cov2cor
+from wlpy.covariance import Covariance
 # %%
 class Other_Methods():
     def __init__(self):
@@ -16,25 +17,24 @@ class Other_Methods():
         """
         assert name in self.names, "Invalid method name."
         T, N = X.shape
-        G_zero = np.ones((N, N)) - np.eye(N)
-        m = AdptCorrThreshold(pd.DataFrame(X), G_zero)
+
+        nb = NetBanding(X, G = np.eye(N), use_correlation = False, num_cv = num_cv)
 
         R_est, S_est, params = None, None, [None]
         if name == 'Sample':
-            S_est = m.sample_cov()
-            R_est = cov2cor(S_est)
+            S_est = nb.S_sample
+            R_est = nb.R_sample
         elif name == 'Soft Threshold' or name == 'Hard Threshold':
-            nb = NetBanding(X, G = np.zeros((N, N)), use_correlation = False, num_cv = num_cv, threshold_method = name.lower()) 
-            # For Soft and Hard Thresholding, diagonal elements are shrunk.
-            params = nb.params_by_cv(cv_option = 'brute') # th = params[0]
+            nb.threshold_method = name.lower()
+            params = nb.params_by_cv(cv_option = 'pd') # th = params[0]
             S_est = nb.fit(params)
             R_est = cov2cor(S_est)
         
         elif name == 'Linear Shrink':
-            S_est = m.lw_lin_shrink()
+            S_est = nb.S_lw
             R_est = cov2cor(S_est)
         elif name == 'Nonlinear Shrink':
             assert T > N, f"Nonlinear shrink method is not applicable with T={T} > N={N}."
-            S_est = m.nonlin_shrink()
+            S_est = nb.S_nlshrink
             R_est = cov2cor(S_est)
         return R_est, S_est, params

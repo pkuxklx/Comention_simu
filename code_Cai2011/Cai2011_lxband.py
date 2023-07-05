@@ -24,7 +24,7 @@ from my_api import *
 # %%
 # Cai2011Adaptive_Model1, myband
 repetition = 100
-cv_option = 'fast_iter'
+cv_option = 'pd'
 num_cv = 50
 folder = 'data'
 simu_str = 'lx_band'

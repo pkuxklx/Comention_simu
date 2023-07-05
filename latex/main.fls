@@ -97,6 +97,10 @@ INPUT d:/texlive/2020/texmf-dist/tex/latex/tools/longtable.sty
 INPUT d:/texlive/2020/texmf-dist/tex/latex/tools/longtable.sty
 INPUT d:/texlive/2020/texmf-dist/tex/latex/multirow/multirow.sty
 INPUT d:/texlive/2020/texmf-dist/tex/latex/multirow/multirow.sty
+INPUT d:/texlive/2020/texmf-dist/tex/latex/graphics/rotating.sty
+INPUT d:/texlive/2020/texmf-dist/tex/latex/graphics/rotating.sty
+INPUT d:/texlive/2020/texmf-dist/tex/latex/base/ifthen.sty
+INPUT d:/texlive/2020/texmf-dist/tex/latex/base/ifthen.sty
 INPUT d:/texlive/2020/texmf-dist/tex/latex/l3backend/l3backend-pdfmode.def
 INPUT d:/texlive/2020/texmf-dist/tex/latex/l3backend/l3backend-pdfmode.def
 INPUT d:/BaiduSyncdisk/Project/Co_simu_3/latex/main.aux
@@ -129,14 +133,12 @@ INPUT d:/texlive/2020/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm
 INPUT d:/texlive/2020/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm
 INPUT d:/BaiduSyncdisk/Project/Co_simu_3/latex/Cai2011Adaptive_Model2_my_processed.tex
 INPUT d:/BaiduSyncdisk/Project/Co_simu_3/latex/Cai2011Adaptive_Model2_my_processed.tex
-INPUT d:/BaiduSyncdisk/Project/Co_simu_3/latex/Bernoulli_processed.tex
-INPUT d:/BaiduSyncdisk/Project/Co_simu_3/latex/Bernoulli_processed.tex
 INPUT d:/texlive/2020/texmf-var/fonts/map/pdftex/updmap/pdftex.map
 INPUT d:/BaiduSyncdisk/Project/Co_simu_3/latex/main.aux
 INPUT d:/BaiduSyncdisk/Project/Co_simu_3/latex/main.out
 INPUT d:/BaiduSyncdisk/Project/Co_simu_3/latex/main.out
 INPUT d:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb
 INPUT d:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb
-INPUT d:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb
 INPUT d:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb
+INPUT d:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb
 INPUT d:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb

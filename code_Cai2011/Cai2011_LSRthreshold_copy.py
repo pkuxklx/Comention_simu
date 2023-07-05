@@ -45,6 +45,9 @@ for N, T in [(30, 100), (100, 100), (200, 100)] + [(100, 300), (300, 300), (500,
     for l in np.linspace(0, 1, 6):
         for prob in [0.5, 0.8, 1]:
             for qrob in [0, 0.1, 0.2]:
+                if (N,T,l,prob,qrob) != (200,100,0,1,0):
+                    continue
+
                 print('probability', l, prob, qrob)
                 est = []
                 for i in range(repetition): 

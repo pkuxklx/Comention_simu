@@ -11,8 +11,8 @@ def heatmap(S, title = 'Matrix_S', path = None, cmap = 'inferno'):
     fig = plt.figure()
     cax = fig.add_subplot(111).matshow(S, cmap = cmap)
     fig.colorbar(cax)
-    plt.figtext(0.5, 0.01, 'Heatmap of ' + '-'.join(title.split()),  wrap=True,
-                horizontalalignment='center', fontsize=10)
+    # plt.figtext(0.5, 0.01, 'Heatmap of ' + '-'.join(title.split()),  wrap=True, horizontalalignment='center', fontsize=10)
+    plt.figtext(0.5, 0.01, 'Heatmap of ' + title,  wrap=True, horizontalalignment='center', fontsize=10)
     if path != None:
         fig.savefig(path + 'Heatmap-' + title + '-' +
                     timestr + '.eps', format='eps')
@@ -33,8 +33,7 @@ def heatmap_dictionary(dict_matrices, shape=[1, 1], path=None, title=''):
         cax = ax.flatten()[j]
         current_mat = cax.matshow(dict_matrices.get(i))
         fig.colorbar(current_mat, ax=ax.ravel()[j])
-        cax.set_title('Heatmap of ' + '-'.join(i.split()),
-                      wrap=True, horizontalalignment='center', fontsize=10)
+        cax.set_title('Heatmap of ' + '-'.join(i.split()), wrap=True, horizontalalignment='center', fontsize=10)
         j = j + 1
     if path != None:
         fig.savefig(path + 'Heatmap-' + title + '-' +

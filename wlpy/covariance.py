@@ -8,19 +8,26 @@ import numpy as np
 
 
 class Covariance():
-    def __init__(self, DF_TxN):
+    def __init__(self, X: np.array):
         """
-        Covariance estimation from the observations X:T*N
+        Covariance estimation from the observations.
+        Args:
+            X: T * N
         """
-        self.X = DF_TxN
-        self.T, self.N = DF_TxN.shape
-        self.S_sample = self.sample_cov()
-        self.S_lw = self.lw_lin_shrink()
-        # self.S_nlshrink = self.nonlin_shrink()
+        self.X = X
+        self.T, self.N = X.shape
 
-    def sample_cov(self):
-        _S = np.cov(np.array(self.X), rowvar=False)
-        return _S
+    @property
+    def S_sample(self):
+        return np.cov(np.array(self.X), rowvar=False)
+
+    @property
+    def R_sample(self):
+        return np.corrcoef(np.array(self.X), rowvar= False)
+    
+    @property
+    def D_sample(self):
+        return np.diag(np.diag(self.S_sample)) ** 0.5
 
     def lw_lin_shrink(self):
         """
@@ -28,11 +35,20 @@ class Covariance():
         """
         S_lw = sk_cov.LedoitWolf().fit(self.X).covariance_
         return S_lw
+    
+    @property
+    def S_lw(self):
+        return self.lw_lin_shrink()
 
     def nonlin_shrink(self):
         S_nlshrink = nls.shrink_cov(self.X)
         return S_nlshrink
-
+    
+    @property
+    def S_nlshrink(self):
+        return self.nonlin_shrink()
+    
+    '''
     def network_hard_threshold(self, G, est_cov=None):
         """
         This calculates the hard-threshold estimator using a network matrix G. 
@@ -45,6 +61,7 @@ class Covariance():
         # threshold by network: if G_ij = 0, est_cov_ij = 0 
         _S[np.where((G + np.eye(self.N)) == 0)] = 0
         return _S
+    '''
 # %%  Heatmap of the cov matrix S
 
 
@@ -64,7 +81,7 @@ X1 = np.random.multivariate_normal(mean = np.zeros(3),
                                    cov = Sigma, 
                                    size = 50)
 # %%
-c = Covariance(X1)
-c.network_hard_threshold(G)
+# c = Covariance(X1)
+# c.network_hard_threshold(G)
 # %%
-c.sample_cov()
+# c.sample_cov()

@@ -325,40 +325,34 @@ class RetDF(DFManipulation):
     
 # %% 
 
-
 class NetBanding(Covariance):
-    def __init__(self, X: np.array, G: np.array, N: int = None, T: int = None, threshold_method='soft threshold', cv_bound=0, use_correlation= True, num_cv = 10, **kwargs):
+    def __init__(self, X: np.array, G: np.array = None, threshold_method = 'soft threshold', use_correlation = True, num_cv = 10, test_size: float = None, scaling_factor: float = None, **kwargs):
         """
         Assume we observe N individuals over T periods, we want to use Network G guided banding method to obtain an N*N estimate of the assumed sparse covariance. 
+
+        Args:
+            scaling_factor: This parameter is only specified when doing cross-validation. See <self.loss_func> for more details.
         """
         super().__init__(X)
-        self.X = X
-        self.G = G
+        self.G = G if G is not None else np.eye(self.N)
         assert ((G == 1) == G).all() # G only have values 0 and 1.
-        if N == None and T ==None:
-            T, N = X.shape
-        self.N = N 
-        self.T = T
+        assert (np.diag(G) == 1).all()
+        
         self.threshold_method = threshold_method
-        self.scaling_factor = np.sqrt(np.log(self.N) / self.T)
         self.use_correlation = use_correlation
         self.num_cv = num_cv
+        self.test_size = 1 / np.log(self.T) if test_size is None else test_size
+        assert 0 < self.test_size < 1
+        self.scaling_factor = np.sqrt(np.log(self.N) / self.T) if scaling_factor is None else scaling_factor
         
-        self.sample_std_diagonal= np.diag(np.diag(self.sample_cov()))**0.5
-        self.R = np.corrcoef(np.array(self.X), rowvar= False)
-
-        
-    def fit(self, params, option = None):
+    def fit(self, params, ad_option = None, ret_cor = False, **kwargs):
         if self.use_correlation:
-            M = self.R
+            M = self.R_sample
             # print("correlation!!!")
         else:
             M = self.S_sample
             
-        if option == "universal":
-            G = np.zeros([self.N, self.N])
-        else:
-            G = self.G
+        G = self.G
         M1 = np.where(G == 1, M, 0)
         M0 = np.where(G == 0, M, 0)
         Tau = params * np.ones([self.N, self.N]) * self.scaling_factor
@@ -367,31 +361,40 @@ class NetBanding(Covariance):
         if self.use_correlation:
             M_new = M_new - np.diag(np.diag(M_new)) + np.eye(self.N)
             self.Rt = M_new
-            S_new = self.sample_std_diagonal @ M_new @ self.sample_std_diagonal
+            S_new = self.D_sample @ M_new @ self.D_sample
         else:
             S_new = M_new
+
+        if ad_option == 'pd':
+            # Chen, 2019, A New Semiparametric Estimation Approach for Large Dynamic Covariance Matrices with Multiple Conditioning Variables
+            w, V = np.linalg.eigh(S_new)
+            w = w.clip(min = 1e-4)
+            S_new = V @ np.diag(w) @ V.T
+
         return S_new
     
     def loss_func(self, params):
         from sklearn.model_selection import train_test_split
         V = self.num_cv
-        test_size = int(np.floor(self.T * 0.4))
-        # V = 4
         score = np.zeros(V)
   
         for v in range(V):
-            A, B = train_test_split(self.X, test_size = test_size, random_state = v)
-            S_train = NetBanding(A, self.G, self.N, self.T).fit(params)
+            A, B = train_test_split(self.X, test_size = self.test_size, random_state = v)
+            S_train = NetBanding(
+                X = A, 
+                G = self.G, 
+                scaling_factor = self.scaling_factor, 
+                use_correlation = self.use_correlation
+                ).fit(params)
             S_validation = np.cov(np.array(B), rowvar = False)
             #  Hadamard product with (1 - G). Make the threshold param more robust.
             S_train = S_train * (1 - self.G)
             S_validation = S_validation * (1 - self.G)
-            score[v] = LA.norm(S_train - S_validation) ** 2
-        average_score = score.mean()
+            score[v] = LA.norm(S_train - S_validation, ord = 'fro') ** 2 
         
-        return average_score
+        return score.mean()
     
-    def params_by_cv(self, cv_option = "brute", cv_bound = 0, **kwargs):
+    def params_by_cv(self, cv_option = 'brute', verbose = False, **kwargs):
         """
         Find the optimal parameters from cross-validation method\n
 
@@ -401,109 +404,35 @@ class NetBanding(Covariance):
         """
 
         from scipy import optimize
-        if cv_option == "brute":
-            result = optimize.brute(
-                self.loss_func, (slice(0, 1.0, 0.1),))
-        elif cv_option == "pd":
-            scaling_factor = self.scaling_factor
-            lb = cv_bound/ scaling_factor
-            ub = 1/ scaling_factor
-            x0 = np.array([0])
+        A = np.abs(self.S_sample)
+        np.fill_diagonal(A, 0)
+        x0 = np.array([A.max() / self.scaling_factor])
+        print('x0:', x0)
+        
+        if cv_option == 'brute':
+            # <optimize.brute> can't restrict the result within a specific range.
             result = optimize.minimize(
-                self.loss_func, x0, method="trust-constr", bounds=((lb, ub),), options={"verbose": 0}).x
-        else: 
-            result = None
-            print("No result, check arguments")
-        return result
-        
-
-# %%
-''' have not maken the change: * (1 - self.G)
-class ANDNetBanding(Covariance):
-    def __init__(self, X: np.array, G: np.array, N: int = None, T: int = None, threshold_method='soft threshold', cv_bound=0, use_correlation= True, num_cv = 10, **kwargs):
-        """
-        Assume we observe N individuals over T periods, we want to use Network G guided banding method to obtain an N*N estimate of the assumed sparse covariance. 
-        """
-        super().__init__(X)
-        self.X = X
-        self.G = G
-        if N == None and T ==None:
-            T,N = X.shape
-        self.N = N 
-        self.T = T
-        self.threshold_method = threshold_method
-        self.scaling_factor = np.sqrt(np.log(self.N) / self.T)
-        self.use_correlation = use_correlation
-        self.num_cv = num_cv
-        
-        self.sample_std_diagonal= np.diag(np.diag(self.sample_cov()))**0.5
-        self.R = np.corrcoef(np.array(self.X), rowvar= False)
-
-        
-    def fit(self, params, option = None):
-        if self.use_correlation:
-            M = self.R
-            # print("correlation!!!")
-        else:
-            M = self.S_sample
+                self.loss_func, 
+                x0, 
+                method = 'trust-constr', 
+                bounds = ((0, None),)
+                ).x
+        elif cv_option == 'pd':
+            # Fan, 2013, Large Covariance Estimation by Thresholding Principal Orthogonal Complements
+            def constraint(params):
+                S_est = self.fit(params)
+                smallest_eigval = np.linalg.eigvalsh(S_est).min()
+                return smallest_eigval - 1e-5
             
-        if option == "universal":
-            G = np.zeros([self.N, self.N])
-        else:
-            G = self.G
-        M1 = np.where(G==1, M, 0)
-        M0 = np.where(G ==0 , M, 0)
-        Tau = params * np.ones([self.N, self.N]) * self.scaling_factor
-        # M0T = generalized_threshold(M0, Tau, self.threshold_method)
-        # M_new = M1 + M0T
-        M1T = generalized_threshold(M1, Tau, self.threshold_method)
-        M_new = M1T
-        if self.use_correlation:
-            M_new = M_new - np.diag(np.diag(M_new)) + np.eye(self.N)
-            self.Rt = M_new
-            S_new = self.sample_std_diagonal @ M_new @ self.sample_std_diagonal
-        else:
-            S_new = M_new
-        return S_new
-    
-    def loss_func(self, params):
-        from sklearn.model_selection import train_test_split
-        V = self.num_cv
-        test_size = int(np.floor(self.T * 0.4))
-        # V = 4
-        score = np.zeros(V)
-  
-        for v in range(V):
-            A, B = train_test_split(self.X, test_size= test_size)
-            S_train = NetBanding(A, self.G, self.N, self.T).fit(params)
-            S_validation = np.cov(np.array(B), rowvar= False)
-            score[v] = LA.norm(S_train - S_validation)**2
-        average_score = score.mean()
-        
-        return average_score
-    
-    def params_by_cv(self, cv_option = "brute", cv_bound = 0, **kwargs):
-        """
-        Find the optimal parameters from cross-validation method\n
-
-        options:\n
-        \t - "brute" : naive brute force\n
-        \t - "pd": minimization with range constraints determined to guarantee pd
-        """
-
-        from scipy import optimize
-        if cv_option == "brute":
-            result = optimize.brute(
-                self.loss_func, (slice(0, 1.0, 0.1),))
-        elif cv_option == "pd":
-            scaling_factor = self.scaling_factor
-            lb = cv_bound/ scaling_factor
-            ub = 1/ scaling_factor
-            x0 = np.array([0])
+            con = {'type': 'ineq', 'fun': constraint}
             result = optimize.minimize(
-                self.loss_func, x0, method="trust-constr", bounds=((lb, ub),), options={"verbose": 0}).x
+                self.loss_func, 
+                x0, 
+                method = 'trust-constr', 
+                bounds = ((0, None),), 
+                constraints = con
+                ).x
         else: 
-            result = None
-            print("No result, check arguments")
+            raise ValueError('Invalid cv_option.')
         return result
-'''
+# %%
