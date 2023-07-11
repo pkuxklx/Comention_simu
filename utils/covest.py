@@ -383,8 +383,9 @@ class NetBanding(Covariance):
             S_train = NetBanding(
                 X = A, 
                 G = self.G, 
-                scaling_factor = self.scaling_factor, 
-                use_correlation = self.use_correlation
+                threshold_method = self.threshold_method, 
+                use_correlation = self.use_correlation, 
+                scaling_factor = self.scaling_factor
                 ).fit(params)
             S_validation = np.cov(np.array(B), rowvar = False)
             #  Hadamard product with (1 - G). Make the threshold param more robust.
