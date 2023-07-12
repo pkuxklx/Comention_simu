@@ -408,7 +408,7 @@ class NetBanding(Covariance):
         A = np.abs(self.S_sample)
         np.fill_diagonal(A, 0)
         x0 = np.array([A.max() / self.scaling_factor])
-        print('x0:', x0)
+        print(f"Maximum off-diagonal magnitude: {x0} * {self.scaling_factor} = {x0 * self.scaling_factor}")
         
         if cv_option == 'brute':
             # <optimize.brute> can't restrict the result within a specific range.
@@ -418,6 +418,12 @@ class NetBanding(Covariance):
                 method = 'trust-constr', 
                 bounds = ((0, None),)
                 ).x
+        elif cv_option == 'grid':
+            result = optimize.brute(
+                self.loss_func, 
+                (slice(0, x0[0], x0[0] / 100.),)
+            )
+            assert result[0] > 0
         elif cv_option == 'pd':
             # Fan, 2013, Large Covariance Estimation by Thresholding Principal Orthogonal Complements
             def constraint(params):
