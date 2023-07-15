@@ -244,13 +244,12 @@ class InfoCorrBand(Covariance):
         
         return R_est if ret_cor else S_est
     
-    '''
+    """
     def fit_info_cov_band(self, k, option = None):
         raise DeprecationWarning
         raise NotImplementedError
         return self.D_sample @ self.fit_info_corr_band(k) @ self.D_sample
-    '''
-    """
+    
     def plot_k_pd(self, k_range = None):
         '''
         Plot 'k'-'smallest eigenvalue'.
@@ -271,7 +270,6 @@ class InfoCorrBand(Covariance):
     def __is_pd(self, k) -> bool:
         raise DeprecationWarning
         return np.linalg.eigvalsh(self.fit_info_cov_band(k)).min() > 1e-5
-    """
     
     def auto_fit(self, cv_option = 'fast_iter', option = None, verbose = False):
         '''
@@ -291,6 +289,5 @@ class InfoCorrBand(Covariance):
             R_est = D_inv @ S_est @ D_inv
 
         return R_est, S_est, k
-    
-    # def params_by_cv(self)
+        """
 # %%

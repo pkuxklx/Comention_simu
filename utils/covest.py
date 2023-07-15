@@ -335,8 +335,8 @@ class NetBanding(Covariance):
         """
         super().__init__(X)
         self.G = G if G is not None else np.eye(self.N)
-        assert ((G == 1) == G).all() # G only have values 0 and 1.
-        assert (np.diag(G) == 1).all()
+        assert ((self.G == 1) == self.G).all() # G only have values 0 and 1.
+        assert (np.diag(self.G) == 1).all()
         
         self.threshold_method = threshold_method
         self.use_correlation = use_correlation
