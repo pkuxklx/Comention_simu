@@ -3,6 +3,7 @@ from wlpy.gist import heatmap, generalized_threshold
 from wlpy.covariance import Covariance
 from sklearn import covariance as sk_cov
 import numpy as np
+import matplotlib.pyplot as plt
 from scipy import linalg as LA
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -405,9 +406,13 @@ class NetBanding(Covariance):
         """
 
         from scipy import optimize
-        A = np.abs(self.S_sample)
+        if self.use_correlation:
+            A = np.abs(self.R_sample)
+        else:
+            A = np.abs(self.S_sample)
         np.fill_diagonal(A, 0)
         x0 = np.array([A.max() / self.scaling_factor])
+        print(f"use_correlation: {self.use_correlation}")
         print(f"Maximum off-diagonal magnitude: {x0} * {self.scaling_factor} = {x0 * self.scaling_factor}")
         
         if cv_option == 'brute':
@@ -442,4 +447,17 @@ class NetBanding(Covariance):
         else: 
             raise ValueError('Invalid cv_option.')
         return result
+
+    def plot(self, ranges = (slice(0, 3, 0.05),), y_type = 'loss'):
+        arr = np.arange(ranges[0].start, ranges[0].stop, ranges[0].step)
+        if y_type == 'loss':
+            y = [self.loss_func([x]) for x in arr]
+        elif y_type == 'eigval':
+            y = [np.linalg.eigvalsh(self.fit([x], ad_option = None)).min() for x in arr]
+        else:
+            raise ValueError('Invalid y_type.')
+        plt.plot(arr * self.scaling_factor, y)
+        plt.title(y_type)
+        plt.xlabel('threshold')
+        plt.show()
 # %%

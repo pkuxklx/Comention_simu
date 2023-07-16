@@ -216,7 +216,7 @@ class InfoCorrBand(Covariance):
         V = self.num_cv
         score = np.zeros(V)
         for v in range(V):
-            X1, X2 = train_test_split(self.X, test_size = self.test_size, random_state = v) # test_size = proportion of X2
+            X1, X2 = train_test_split(self.X, test_size = self.test_size, random_state = v)
             o1 = InfoCorrBand(X1, self.L)
             o2 = InfoCorrBand(X2) # needn't to call  __compute_orders
             R_train = o1.fit(params, ad_option = None, ret_cor = True) # when cv, we don't do modifications (ad_option = None), and use correlation matrices.
@@ -244,6 +244,19 @@ class InfoCorrBand(Covariance):
         
         return R_est if ret_cor else S_est
     
+    def plot(self, ranges = (slice(1, 50, None),), y_type = 'loss'):
+        arr = range(ranges[0].start, ranges[0].stop + 1)
+        if y_type == 'loss':
+            y = [self.loss_func([x]) for x in arr]
+        elif y_type == 'eigval':
+            y = [np.linalg.eigvalsh(self.fit([x], ad_option = None)).min() for x in arr]
+        else:
+            raise ValueError('Invalid y_type.')
+        plt.plot(arr, y)
+        plt.title(y_type)
+        plt.xlabel('k')
+        plt.show()
+
     """
     def fit_info_cov_band(self, k, option = None):
         raise DeprecationWarning
