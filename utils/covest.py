@@ -8,6 +8,8 @@ from scipy import linalg as LA
 import matplotlib.pyplot as plt
 import pandas as pd
 from wlpy.dataframe import DFManipulation
+
+import warnings
 # %%
 
 
@@ -413,6 +415,7 @@ class NetBanding(Covariance):
         print(f"Maximum off-diagonal magnitude: {x0}")
         
         if cv_option == 'brute':
+            warnings.warn('Not robust.', DeprecationWarning)
             # <optimize.brute> can't restrict the result within a specific range.
             result = optimize.minimize(
                 self.loss_func, 
@@ -427,6 +430,7 @@ class NetBanding(Covariance):
             )
             assert result[0] > 0
         elif cv_option == 'pd':
+            warnings.warn('Not robust.', DeprecationWarning)
             # Fan, 2013, Large Covariance Estimation by Thresholding Principal Orthogonal Complements
             def constraint(params):
                 S_est = self.fit(params)
@@ -441,6 +445,20 @@ class NetBanding(Covariance):
                 bounds = ((0, None),), 
                 constraints = con
                 ).x
+        elif cv_option == 'pd_grid':
+            _result = optimize.brute(
+                self.loss_func, 
+                (slice(0, x0[0], x0[0] / 100.),), 
+                full_output = True
+            )
+            l = len(_result[2])
+            id = l - 1
+            while id >= 0:
+                if np.linalg.eigvalsh(self.fit([_result[2][id]])).min() <= 0:
+                    break
+                id -= 1
+            _result[3][0:id + 1] = np.inf
+            result = [_result[2][_result[3].argmin()]]
         else: 
             raise ValueError('Invalid cv_option.')
         return result
