@@ -327,12 +327,11 @@ class RetDF(DFManipulation):
 # %% 
 
 class NetBanding(Covariance):
-    def __init__(self, X: np.array, G: np.array = None, threshold_method = 'soft threshold', use_correlation = True, num_cv = 10, test_size: float = None, scaling_factor: float = None, **kwargs):
+    def __init__(self, X: np.array, G: np.array = None, threshold_method = 'soft threshold', use_correlation = True, num_cv = 10, test_size: float = None, **kwargs):
         """
         Assume we observe N individuals over T periods, we want to use Network G guided banding method to obtain an N*N estimate of the assumed sparse covariance. 
 
         Args:
-            scaling_factor: This parameter is only specified when doing cross-validation. See <self.loss_func> for more details.
         """
         super().__init__(X)
         self.G = G if G is not None else np.eye(self.N)
@@ -344,7 +343,6 @@ class NetBanding(Covariance):
         self.num_cv = num_cv
         self.test_size = 1 / np.log(self.T) if test_size is None else test_size
         assert 0 < self.test_size < 1
-        self.scaling_factor = np.sqrt(np.log(self.N) / self.T) if scaling_factor is None else scaling_factor
         
     def fit(self, params, ad_option = None, ret_cor = False, **kwargs):
         if self.use_correlation:
@@ -356,7 +354,7 @@ class NetBanding(Covariance):
         G = self.G
         M1 = np.where(G == 1, M, 0)
         M0 = np.where(G == 0, M, 0)
-        Tau = params * np.ones([self.N, self.N]) * self.scaling_factor
+        Tau = params * np.ones([self.N, self.N])
         M0T = generalized_threshold(M0, Tau, self.threshold_method)
         M_new = M1 + M0T
         if self.use_correlation:
@@ -385,8 +383,7 @@ class NetBanding(Covariance):
                 X = A, 
                 G = self.G, 
                 threshold_method = self.threshold_method, 
-                use_correlation = self.use_correlation, 
-                scaling_factor = self.scaling_factor
+                use_correlation = self.use_correlation
                 ).fit(params)
             S_validation = np.cov(np.array(B), rowvar = False)
             #  Hadamard product with (1 - G). Make the threshold param more robust.
@@ -411,9 +408,9 @@ class NetBanding(Covariance):
         else:
             A = np.abs(self.S_sample)
         np.fill_diagonal(A, 0)
-        x0 = np.array([A.max() / self.scaling_factor])
+        x0 = np.array([A.max()])
         print(f"use_correlation: {self.use_correlation}")
-        print(f"Maximum off-diagonal magnitude: {x0} * {self.scaling_factor} = {x0 * self.scaling_factor}")
+        print(f"Maximum off-diagonal magnitude: {x0}")
         
         if cv_option == 'brute':
             # <optimize.brute> can't restrict the result within a specific range.
@@ -456,7 +453,7 @@ class NetBanding(Covariance):
             y = [np.linalg.eigvalsh(self.fit([x], ad_option = None)).min() for x in arr]
         else:
             raise ValueError('Invalid y_type.')
-        plt.plot(arr * self.scaling_factor, y)
+        plt.plot(arr, y)
         plt.title(y_type)
         plt.xlabel('threshold')
         plt.show()
