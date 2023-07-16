@@ -4,6 +4,7 @@
 from sklearn import covariance as sk_cov
 import nonlinshrink as nls
 import numpy as np
+import matplotlib.pyplot as plt
 # %%
 
 
@@ -48,6 +49,23 @@ class Covariance():
     def S_nlshrink(self):
         return self.nonlin_shrink()
     
+    def hist(self, option = 'off-diag', cov = True):
+        """
+        Plot the histogram of the amplitudes in S_sample or R_sample.
+        """
+        M = self.S_sample if cov else self.R_sample
+        M = np.abs(M)
+        if option == 'off-diag':
+            data = [m for i, row in enumerate(M) for j, m in enumerate(row) if i != j]
+        elif option == 'diag':
+            data = np.diag(M)
+        elif option == 'all':
+            data = M.flatten() 
+        else:
+            raise ValueError('Invalid option.')
+        plt.hist(data, bins = int(self.N ** 0.5))
+        plt.title(f"{option}, {'cov' if cov else 'cor'}")
+        plt.show()
     '''
     def network_hard_threshold(self, G, est_cov=None):
         """
