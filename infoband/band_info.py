@@ -36,45 +36,28 @@ class InfoCorrBand(Covariance):
     '''
     
     def __init__(self, X: np.array, L: np.array = None, num_cv = 10, test_size: float = None):
-        '''
-        X: 2-D array 
-            Data. Each row is an observation. Each column is a random variable. Of size T*N.
+        """
+        Args:
+            X: 2-D array Data. Each row is an observation. Each column is a random variable. Of size T*N.
             
-        L: 2-D array 
-            Symmetric auxiliary information matrix of size N*N. Each entry is a positive float, whose magnitude resembles the magnitude of the corresponding correlation coefficient.
+            L: 2-D array Symmetric auxiliary information matrix of size N * N. Each entry is a positive float, whose magnitude resembles the magnitude of the corresponding correlation coefficient.
         
-        num_cv: int, optional
-            Repeat cross-validation for num_cv times before computing the average score.
+            num_cv: int, optional. Do random split for num_cv times in cross-validation.
         
-        test_size: int, optional
-            The fraction of observations in the test set in cross validation.
-
-        cv_option: str, optional
-            Choice of the tuning parameters.
-        
-        ad_option: str, optional
-            Modification of the estimated covariance.
-        '''
+            test_size: float, optional. The fraction of observations in the test set in CV.
+        """
         super().__init__(X)
         # self.L and self.rowSort are initialized in feed_info().
         self.L = None
         self.rowSort = None
         self.feed_info(L)
-        '''
-        # NO NEED. 
-        # uniformity class parameter. 
-        self.q = q  
-        self.alpha = alpha
-        self.scaling_factor = (np.log(self.N) / self.T) ** (-q / (2*alpha + 2))
-        '''
         self.num_cv = num_cv
         self.test_size = 1 / np.log(self.T) if test_size is None else test_size
         
     def feed_info(self, L = None):
-        '''
-        This func is first called when __init__().
-        You can also change L-matrix later on.
-        '''
+        """
+        Get L-matrix. This func is first called when __init__(). You can also change L-matrix later on.
+        """
         if L is None:
             warnings.warn('L-matrix is missing.')
             return 
@@ -86,63 +69,32 @@ class InfoCorrBand(Covariance):
         self.__compute_orders()
         
     def __compute_orders(self):
-        '''
-        A private function called by feed_info().
-        Generates rowSort-matrix.
+        """
+        A private function called by feed_info(). Generates rowSort-matrix.
         rowSort: 2-D array
             'self.rowSort[i,j]=k' means in row/column i, self.L indicates that j is the k-biggest in magnitude
-        '''
+        """
         L = self.L
         N = self.N
         rowSort = np.zeros((N, N))
         for i in range(N):
             f = lambda x: np.argsort(x)
-            rowSort[i] = N - f(f(L[i]))
-            '''
-            Order = np.argsort(L[i])[::-1]
-            # tmp = np.zeros(N) # does accelerate 44%
-            for k in range(N):
-                # tmp[Order[k]] = k+1 #
-                rowSort[i][Order[k]] = k+1
-            # N - np.argsort(np.argsort(L[i])) == rowSort[i])), it has been tested
-            # rowSort[i] = tmp #
-            '''
+            rowSort[i] = N - f(f(L[i])) # argsort for 2 times: (b,a,c) => (2,1,3) if a<b<c
         self.rowSort = rowSort
     
-    """
-    def find_biggest_k_for_pd(self):
-        '''
-        When k=N, the estimator reduces to the sample covariance, not P.D.
-        When k=1, the estimator becomes diagonal, P.D.
-        '''
-        left, right = 1, self.N
-        '''
-        Binary search for the biggest k with P.D. estimator.
-        Search in the interval [left, right]
-        '''
-        while left < right: 
-            mid = (left + right) // 2 + 1
-            EigVals = np.linalg.eigvals(self.fit_info_corr_band(k = mid))
-            if EigVals[-1] > self.eps:
-                left = mid
-            else:
-                right = mid - 1
-        return mid
-    """
-    
-    def params_by_cv(self, cv_option = 'fast_iter', verbose = False, **kwargs):
-        '''
-        Find the optimal parameter k from cross-validation.
-        '''
+    def params_by_cv(self, cv_option = 'brute', **kwargs):
+        """
+        Find the optimal parameter k by cross-validation.
+        """
         if cv_option not in ['pd', 'brute', 'fast_iter']:
-            raise Exception("No such cv_option.")
+            raise ValueError("Invalid cv_option.")
         
         N = self.N
         score = []
         if cv_option == 'pd':
             k = 1
             while k <= N:
-                if not self.__is_pd(k):
+                if np.linalg.eigvalsh(self.fit([k], ad_option = None)).min() <= 0: # not PD
                     break
                 score.append(self.loss_func([k]))
                 k += 1
@@ -150,12 +102,7 @@ class InfoCorrBand(Covariance):
         elif cv_option == 'brute':
             score = [self.loss_func([k]) for k in range(1, N + 1)]
             ans_k = np.array(score).argmin() + 1
-            
-        if verbose:
-            plt.plot(range(1, len(score) + 1), score)
-            plt.show()
-        
-        if cv_option == 'fast_iter':
+        elif cv_option == 'fast_iter':
             warnings.warn('Not robust.', DeprecationWarning)
             '''
             This algorithm is an adapted version of the ternary search algorithm for the minimum of a U-shaped curve. 
@@ -226,6 +173,14 @@ class InfoCorrBand(Covariance):
         return score.mean()
     
     def fit(self, params, ad_option = None, ret_cor = False, **kwargs):
+        """
+        Args:
+            params: [k].
+    
+            ad_option: Adjustment after fitting.
+    
+            ret_cor: If True, return the correlation estimator. 
+        """
         k = params[0]
         
         N = self.N
@@ -245,6 +200,12 @@ class InfoCorrBand(Covariance):
         return R_est if ret_cor else S_est
     
     def plot(self, ranges = (slice(1, 50, None),), y_type = 'loss'):
+        """
+        This function facilitates debugging. Plot the tuning parameter against the loss or the smallest eigenvalue. 
+        Args:
+            ranges: tuple. Each element in the tuple is the range of one tuning parameter. In this case, there is only one param 'k'.
+            y_type: str. 
+        """
         arr = range(ranges[0].start, ranges[0].stop + 1)
         if y_type == 'loss':
             y = [self.loss_func([x]) for x in arr]
@@ -257,50 +218,4 @@ class InfoCorrBand(Covariance):
         plt.xlabel('k')
         plt.show()
 
-    """
-    def fit_info_cov_band(self, k, option = None):
-        raise DeprecationWarning
-        raise NotImplementedError
-        return self.D_sample @ self.fit_info_corr_band(k) @ self.D_sample
-    
-    def plot_k_pd(self, k_range = None):
-        '''
-        Plot 'k'-'smallest eigenvalue'.
-        '''
-        raise DeprecationWarning
-        N = self.N
-        if k_range is None:
-            k_range = range(N - N // 4, N + 1)
-        vals = [np.linalg.eigvals(self.fit_info_corr_band(k))[-1] 
-                for k in k_range]
-        plt.plot(k_range, vals)
-        plt.xlabel('parameter k')
-        plt.ylabel('smallest eigenvalue of correlation estimator')
-        # plt.savefig('../figs/plot_k_pd.jpg')
-        plt.show()
-        return
-    
-    def __is_pd(self, k) -> bool:
-        raise DeprecationWarning
-        return np.linalg.eigvalsh(self.fit_info_cov_band(k)).min() > 1e-5
-    
-    def auto_fit(self, cv_option = 'fast_iter', option = None, verbose = False):
-        '''
-        param verbose is effective when cv_option = 'brute'. 
-        '''
-        raise NotImplementedError
-        params = self.params_by_cv(cv_option, verbose)
-        R_est = self.fit_info_corr_band(params)
-        S_est = self.D_sample @ R_est @ self.D_sample
-
-        if option == 'pd':
-            w, V = np.linalg.eigh(S_est)
-            w = w.clip(min = 1e-4)
-            S_est = V @ np.diag(w) @ V.T
-            
-            D_inv = np.linalg.inv(self.D_sample)
-            R_est = D_inv @ S_est @ D_inv
-
-        return R_est, S_est, k
-        """
 # %%

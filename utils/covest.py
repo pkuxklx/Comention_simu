@@ -396,7 +396,7 @@ class NetBanding(Covariance):
         
         return score.mean()
     
-    def params_by_cv(self, cv_option = 'brute', verbose = False, **kwargs):
+    def params_by_cv(self, cv_option = 'brute', **kwargs):
         """
         Find the optimal parameters from cross-validation method\n
 
