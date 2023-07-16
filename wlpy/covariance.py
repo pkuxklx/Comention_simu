@@ -49,10 +49,14 @@ class Covariance():
     def S_nlshrink(self):
         return self.nonlin_shrink()
     
-    def hist(self, option = 'off-diag', cov = True):
+    def hist(self, option = 'off-diag', interval = [0, None], cov = True):
         """
         Plot the histogram of the amplitudes in S_sample or R_sample.
         """
+        if interval[0] is None:
+            interval[0] = -1
+        if interval[1] is None:
+            interval[1] = np.inf
         M = self.S_sample if cov else self.R_sample
         M = np.abs(M)
         if option == 'off-diag':
@@ -63,7 +67,8 @@ class Covariance():
             data = M.flatten() 
         else:
             raise ValueError('Invalid option.')
-        plt.hist(data, bins = int(self.N ** 0.5))
+        data = [x for x in data if interval[0] <= x <= interval[1]]
+        plt.hist(data, bins = self.N)
         plt.title(f"{option}, {'cov' if cov else 'cor'}")
         plt.show()
     '''
