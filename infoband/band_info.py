@@ -63,9 +63,15 @@ class InfoCorrBand(Covariance):
             return 
         if self.N != L.shape[0]:
             raise Exception('The sizes of X and L do not match.')
+        if not (L.argmax(axis = 0) == np.arange(self.N)).all():
+            warnings.warn("In each row of L-matrix, the diagonal element should be treated as the most important.")
+            assert (L >= 0).all()
+            m = L.max()
+            L = L + np.eye(self.N) * (m + 1)
         if not (L == L.transpose()).all(): # asymmetric
             warnings.warn('Input L-matrix is asymmetric.', DeprecationWarning)
-        self.L = (L + L.transpose()) / 2
+            L = (L + L.transpose()) / 2
+        self.L = L
         self.__compute_orders()
         
     def __compute_orders(self):
