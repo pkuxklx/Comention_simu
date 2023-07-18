@@ -178,7 +178,7 @@ class InfoCorrBand(Covariance):
 
         return score.mean()
     
-    def fit(self, params, ad_option = None, ret_cor = False, **kwargs):
+    def fit(self, params, ad_option = None, ret_cor = False, eps = 1e-4, **kwargs):
         """
         Args:
             params: [k].
@@ -186,6 +186,8 @@ class InfoCorrBand(Covariance):
             ad_option: Adjustment after fitting.
     
             ret_cor: If True, return the correlation estimator. 
+
+            eps: Only used when ad_option = 'pd'. The smallest eigenvalue.
         """
         k = params[0]
         
@@ -200,7 +202,7 @@ class InfoCorrBand(Covariance):
         if ad_option == 'pd':
             # Chen, 2019, A New Semiparametric Estimation Approach for Large Dynamic Covariance Matrices with Multiple Conditioning Variables
             w, V = np.linalg.eigh(S_est)
-            w = w.clip(min = 1e-4)
+            w = w.clip(min = eps)
             S_est = V @ np.diag(w) @ V.T
         
         return R_est if ret_cor else S_est

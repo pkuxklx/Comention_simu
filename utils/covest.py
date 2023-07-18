@@ -346,7 +346,17 @@ class NetBanding(Covariance):
         self.test_size = 1 / np.log(self.T) if test_size is None else test_size
         assert 0 < self.test_size < 1
         
-    def fit(self, params, ad_option = None, ret_cor = False, **kwargs):
+    def fit(self, params, ad_option = None, ret_cor = False, eps = 1e-4, **kwargs):
+        """
+        Args:
+            params: [threshold].
+    
+            ad_option: Adjustment after fitting.
+    
+            ret_cor: If True, return the correlation estimator. 
+
+            eps: Only used when ad_option = 'pd'. The smallest eigenvalue.
+        """
         if self.use_correlation:
             M = self.R_sample
             # print("correlation!!!")
@@ -369,7 +379,7 @@ class NetBanding(Covariance):
         if ad_option == 'pd':
             # Chen, 2019, A New Semiparametric Estimation Approach for Large Dynamic Covariance Matrices with Multiple Conditioning Variables
             w, V = np.linalg.eigh(S_new)
-            w = w.clip(min = 1e-4)
+            w = w.clip(min = eps)
             S_new = V @ np.diag(w) @ V.T
 
         return S_new
