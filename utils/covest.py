@@ -406,13 +406,16 @@ class NetBanding(Covariance):
         
         return score.mean()
     
-    def params_by_cv(self, cv_option = 'brute', **kwargs):
+    def params_by_cv(self, cv_option = 'brute', eps = 1e-4, **kwargs):
         """
         Find the optimal parameters from cross-validation method\n
 
-        options:\n
-        \t - "brute" : naive brute force\n
-        \t - "pd": minimization with range constraints determined to guarantee pd
+        Args:
+            cv_options:\n
+            \t - "brute" : naive brute force\n
+            \t - "pd": minimization with range constraints determined to guarantee pd
+
+            eps: Only used when cv_option = 'pd' or 'pd_grid'.
         """
 
         from scipy import optimize
@@ -446,7 +449,7 @@ class NetBanding(Covariance):
             def constraint(params):
                 S_est = self.fit(params)
                 smallest_eigval = np.linalg.eigvalsh(S_est).min()
-                return smallest_eigval - 1e-5
+                return smallest_eigval - eps
             
             con = {'type': 'ineq', 'fun': constraint}
             result = optimize.minimize(
@@ -465,7 +468,7 @@ class NetBanding(Covariance):
             l = len(_result[2])
             id = l - 1
             while id >= 0:
-                if np.linalg.eigvalsh(self.fit([_result[2][id]])).min() <= 0:
+                if np.linalg.eigvalsh(self.fit([_result[2][id]])).min() < eps:
                     break
                 id -= 1
             _result[3][0:id + 1] = np.inf
