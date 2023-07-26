@@ -417,6 +417,7 @@ class NetBanding(Covariance):
 
             eps: Only used when cv_option = 'pd' or 'pd_grid'.
         """
+        loss_func = self.loss_func
 
         from scipy import optimize
         if self.use_correlation:
@@ -432,14 +433,14 @@ class NetBanding(Covariance):
             warnings.warn('Not robust.', DeprecationWarning)
             # <optimize.brute> can't restrict the result within a specific range.
             result = optimize.minimize(
-                self.loss_func, 
+                loss_func, 
                 x0, 
                 method = 'trust-constr', 
                 bounds = ((0, None),)
                 ).x
         elif cv_option == 'grid':
             result = optimize.brute(
-                self.loss_func, 
+                loss_func, 
                 (slice(0, x0[0], x0[0] / 100.),)
             )
             assert result[0] > 0
@@ -453,7 +454,7 @@ class NetBanding(Covariance):
             
             con = {'type': 'ineq', 'fun': constraint}
             result = optimize.minimize(
-                self.loss_func, 
+                loss_func, 
                 x0, 
                 method = 'trust-constr', 
                 bounds = ((0, None),), 
@@ -461,7 +462,7 @@ class NetBanding(Covariance):
                 ).x
         elif cv_option == 'pd_grid':
             _result = optimize.brute(
-                self.loss_func, 
+                loss_func, 
                 (slice(0, x0[0], x0[0] / 100.),), 
                 full_output = True
             )
@@ -489,4 +490,63 @@ class NetBanding(Covariance):
         plt.title(y_type)
         plt.xlabel('threshold')
         plt.show()
+
+    def loss_func_inv(self, params):
+        """
+        Difference between the sample precision matrix and our proposed estimator after 'pd' adjustment.
+
+        Args:
+            params: [threshold, eps]
+        """
+        th, log10_eps = params
+        eps = 10 ** log10_eps
+        from sklearn.model_selection import train_test_split
+        V = self.num_cv
+        score = np.zeros(V)
+  
+        for v in range(V):
+            A, B = train_test_split(self.X, test_size = self.test_size, random_state = v)
+            S_train = NetBanding(
+                X = A, 
+                G = self.G, 
+                threshold_method = self.threshold_method, 
+                use_correlation = self.use_correlation
+                ).fit(params = [th], ad_option = 'pd', eps = eps)
+            
+            S_validation = np.cov(np.array(B), rowvar = False)
+            w, V = np.linalg.eigh(S_validation)
+            w = w.clip(min = eps)
+            S_validation = V @ np.diag(w) @ V.T
+
+            S1 = np.linalg.inv(S_train)
+            S2 = np.linalg.inv(S_validation)
+            score[v] = LA.norm(S1 - S2, ord = 'fro') ** 2 
+        
+        return score.mean()
+
+    def params_by_cv_inv(self, cv_option = 'grid', slices = None, **kwargs):
+        loss_func = self.loss_func_inv
+
+        from scipy import optimize
+        if self.use_correlation:
+            A = np.abs(self.R_sample)
+        else:
+            A = np.abs(self.S_sample)
+        np.fill_diagonal(A, 0)
+        x0 = np.array([A.max()])
+        print(f"use_correlation: {self.use_correlation}")
+        print(f"Maximum off-diagonal magnitude: {x0}")
+        if cv_option == 'grid':
+            if slices is None:
+                log10_eps_range = slice(-6, -2, 0.5)
+                slices = (slice(0, x0[0], x0[0] / 20.), log10_eps_range)
+            result = optimize.brute(
+                loss_func, 
+                ranges = slices, 
+                finish = None
+            )
+            assert result[0] > 0
+        else:
+            raise ValueError('Invalid cv_option.')
+        return result
 # %%
