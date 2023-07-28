@@ -426,7 +426,7 @@ class NetBanding(Covariance):
             A = np.abs(self.S_sample)
         np.fill_diagonal(A, 0)
         x0 = np.array([A.max()])
-        print(f"use_correlation: {self.use_correlation}")
+        # print(f"use_correlation: {self.use_correlation}")
         print(f"Maximum off-diagonal magnitude: {x0}")
         
         if cv_option == 'brute':
@@ -443,7 +443,7 @@ class NetBanding(Covariance):
                 loss_func, 
                 (slice(0, x0[0], x0[0] / 100.),)
             )
-            assert result[0] > 0
+            assert result[0] >= 0
         elif cv_option == 'pd':
             warnings.warn('Not robust.', DeprecationWarning)
             # Fan, 2013, Large Covariance Estimation by Thresholding Principal Orthogonal Complements
@@ -520,13 +520,11 @@ class NetBanding(Covariance):
 
             S1 = np.linalg.inv(S_train)
             S2 = np.linalg.inv(S_validation)
-            score[v] = LA.norm(S1 - S2, ord = 'fro') ** 2 
+            score[v] = LA.norm(S1 - S2, ord = 1) ** 2 
         
         return score.mean()
 
-    def params_by_cv_inv(self, cv_option = 'grid', slices = None, **kwargs):
-        loss_func = self.loss_func_inv
-
+    def params_by_cv_inv(self, cv_option = 'grid', slices = None, args = [None, None], **kwargs):
         from scipy import optimize
         if self.use_correlation:
             A = np.abs(self.R_sample)
@@ -534,19 +532,39 @@ class NetBanding(Covariance):
             A = np.abs(self.S_sample)
         np.fill_diagonal(A, 0)
         x0 = np.array([A.max()])
-        print(f"use_correlation: {self.use_correlation}")
+        # print(f"use_correlation: {self.use_correlation}")
         print(f"Maximum off-diagonal magnitude: {x0}")
-        if cv_option == 'grid':
+        if cv_option == 'grid' and args == [None, None]:
             if slices is None:
                 log10_eps_range = slice(-6, -2, 0.5)
-                slices = (slice(0, x0[0], x0[0] / 20.), log10_eps_range)
+                slices = (slice(0, x0[0], x0[0] / 100.), log10_eps_range)
+
             result = optimize.brute(
-                loss_func, 
+                func = self.loss_func_inv, 
                 ranges = slices, 
                 finish = None
             )
-            assert result[0] > 0
+            assert result[0] >= 0
+        elif cv_option == 'grid' and args[0] is None:
+            # eps is specified
+            log10_eps = args[1]
+            if slices is None:
+                slices = (slice(0, x0[0], x0[0] / 100.),)
+
+            def wrapper(x, *args):
+                params = np.array([x[0], args[0]])
+                return self.loss_func_inv(params)
+            
+            result = optimize.brute(
+                func = wrapper, 
+                ranges = slices, 
+                finish = None, 
+                args = (log10_eps,)
+            )
+            result = [result]
+            assert result[0] >= 0
         else:
-            raise ValueError('Invalid cv_option.')
+            raise NotImplementedError
+            # raise ValueError('Invalid cv_option.')
         return result
 # %%
